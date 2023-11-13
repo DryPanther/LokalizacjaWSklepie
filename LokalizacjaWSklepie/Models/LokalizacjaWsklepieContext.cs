@@ -33,7 +33,6 @@ public partial class LokalizacjaWsklepieContext : DbContext
     {
         modelBuilder.Entity<Container>(entity =>
         {
-            entity.Property(e => e.ContainerId).ValueGeneratedNever();
             entity.Property(e => e.ContainerType)
                 .IsRequired()
                 .HasMaxLength(50);
@@ -62,7 +61,6 @@ public partial class LokalizacjaWsklepieContext : DbContext
 
         modelBuilder.Entity<Product>(entity =>
         {
-            entity.Property(e => e.ProductId).ValueGeneratedNever();
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -90,7 +88,6 @@ public partial class LokalizacjaWsklepieContext : DbContext
 
         modelBuilder.Entity<Shop>(entity =>
         {
-            entity.Property(e => e.ShopId).ValueGeneratedNever();
             entity.Property(e => e.City)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -110,7 +107,6 @@ public partial class LokalizacjaWsklepieContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.Property(e => e.UserId).ValueGeneratedNever();
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(50)

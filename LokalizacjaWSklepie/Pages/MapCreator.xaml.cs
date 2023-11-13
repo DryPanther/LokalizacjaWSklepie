@@ -17,12 +17,12 @@ namespace LokalizacjaWSklepie.Pages
             MapCreate();
         }
 
-        private void SaveContainerToDatabase(BoxView container, double width, double height, int shopId)
+        private async void SaveContainerToDatabase(BoxView container, double width, double height, int shopId)
         {
             // Utwórz nowy kontener na podstawie danych wprowadzonych przez u¿ytkownika
             var newContainer = new Container
             {
-                ContainerType = "Typ Kontenera", // Okreœl odpowiedni typ kontenera
+                ContainerType = container.AutomationId, // Okreœl odpowiedni typ kontenera
                 Width = width,
                 Length = height,
                 CoordinateX = (int)container.TranslationX, // Konwertuj do int, aby pasowa³o do modelu danych
@@ -32,6 +32,7 @@ namespace LokalizacjaWSklepie.Pages
 
             // Dodaj kontener do bazy danych
             dbContext.Containers.Add(newContainer);
+            await dbContext.SaveChangesAsync();
         }
 
         private async void SaveMapToDatabase()
@@ -248,7 +249,9 @@ namespace LokalizacjaWSklepie.Pages
                         WidthRequest = szerokosc * skala, // Ustawienie szerokoœci na podan¹ wartoœæ
                         HeightRequest = wysokosc * skala // Ustawienie wysokoœci na podan¹ wartoœæ
                     };
-
+                    List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak" };
+                    string selectedType = await DisplayActionSheet("Wybierz typ kontenera", "Anuluj", null, availableTypes.ToArray());
+                    prostokat.AutomationId = selectedType;
                     // Dodanie obs³ugi zdarzenia klikniêcia na prostok¹t
                     // Dodajemy obs³ugê przesuwania
                     var przesunGestureRecognizer = new PanGestureRecognizer();
