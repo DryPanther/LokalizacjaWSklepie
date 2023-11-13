@@ -17,7 +17,8 @@
 
             <Button Text="Dodaj pojemnik" Clicked="AddRectangle_Clicked" />
             <Button Text="Przełącz tryb usuwania" Clicked="SwitchModeButton_Clicked" />
-        </VerticalStackLayout>
+                <Button Text="Zapisz Mapę" Clicked="SaveMapButton_Clicked" />
+            </VerticalStackLayout>
     </Grid>
     </ScrollView>
 </ContentPage>
