@@ -1,0 +1,11 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=KOMPUTER-MANUEL\\SQLEXPRESS;Database=LokalizacjaWSklepie;Integrated Security=True;"
+  },
+  "profiles": {
+    "Windows Machine": {
+      "commandName": "MsixPackage",
+      "nativeDebugging": false
+    }
+  }
+}

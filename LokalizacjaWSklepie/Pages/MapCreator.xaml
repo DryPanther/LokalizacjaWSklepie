@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LokalizacjaWSklepie.Pages.MapCreator"
+             Title="MapCreator">
+    <ScrollView>
+    <Grid x:Name="Layout">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+        <VerticalStackLayout
+            Spacing="25"
+            Padding="30,0"
+            VerticalOptions="Center"
+            Grid.Row="0">
+
+            <Button Text="Dodaj pojemnik" Clicked="AddRectangle_Clicked" />
+            <Button Text="Przełącz tryb usuwania" Clicked="SwitchModeButton_Clicked" />
+        </VerticalStackLayout>
+    </Grid>
+    </ScrollView>
+</ContentPage>
