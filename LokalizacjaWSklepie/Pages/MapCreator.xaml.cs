@@ -19,48 +19,59 @@ namespace LokalizacjaWSklepie.Pages
 
         private async void SaveContainerToDatabase(BoxView container, double width, double height, int shopId)
         {
-            // Utwórz nowy kontener na podstawie danych wprowadzonych przez u¿ytkownika
-            var newContainer = new Container
+            using (var dbContext = new LokalizacjaWsklepieContext())
             {
-                ContainerType = container.AutomationId, // Okreœl odpowiedni typ kontenera
-                Width = width,
-                Length = height,
-                CoordinateX = (int)container.TranslationX, // Konwertuj do int, aby pasowa³o do modelu danych
-                CoordinateY = (int)container.TranslationY,
-                ShopId = shopId // Przypisz ShopId do kontenera
-            };
+                // Utwórz nowy kontener na podstawie danych wprowadzonych przez u¿ytkownika
+                var newContainer = new Container
+                {
+                    ContainerType = container.ClassId, // Okreœl odpowiedni typ kontenera
+                    Width = width,
+                    Length = height,
+                    CoordinateX = (int)container.TranslationX, // Konwertuj do int, aby pasowa³o do modelu danych
+                    CoordinateY = (int)container.TranslationY,
+                    ShopId = shopId // Przypisz ShopId do kontenera
+                };
 
-            // Dodaj kontener do bazy danych
-            dbContext.Containers.Add(newContainer);
-            await dbContext.SaveChangesAsync();
+                // Dodaj kontener do bazy danych
+                dbContext.Containers.Add(newContainer);
+                await dbContext.SaveChangesAsync();
+            }
         }
 
         private async void SaveMapToDatabase()
         {
-            // Pobierz sklep z Layoutu
-            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxView box && box.AutomationId == "Sklep") as BoxView;
-
-            if (shopBox != null)
+            using (var dbContext = new LokalizacjaWsklepieContext())
             {
-                // Zapisz sklep do bazy danych i pobierz nadane ShopId
-                int shopId = await SaveShopToDatabase(shopBox);
-                // Iteruj przez wszystkie elementy w Layout
-                foreach (var child in Layout.Children)
+                // Pobierz sklep z Layoutu
+                var shopBox = Layout.Children.FirstOrDefault(child => child is BoxView box && box.ClassId == "Sklep") as BoxView;
+
+                if (shopBox != null)
                 {
-                    if (child is BoxView container)
+                    // Zapisz sklep do bazy danych i pobierz nadane ShopId
+                    int shopId = await SaveShopToDatabase(shopBox);
+                    // Iteruj przez wszystkie elementy w Layout
+                    foreach (var child in Layout.Children)
                     {
-                        // SprawdŸ, czy to kontener (mo¿esz u¿yæ AutomationId lub innego mechanizmu identyfikacji)
-                        if (container.AutomationId != "Sklep")
+                        if (child is BoxView container)
                         {
-                            // Zapisz kontener do bazy danych, przekazuj¹c ShopId
-                            SaveContainerToDatabase(container, container.Width / skala, container.Height / skala, shopId);
+                            // SprawdŸ, czy to kontener (mo¿esz u¿yæ ClassId lub innego mechanizmu identyfikacji)
+                            if (container.ClassId != "Sklep")
+                            {
+                                // Zapisz kontener do bazy danych, przekazuj¹c ShopId
+                                SaveContainerToDatabase(container, container.Width / skala, container.Height / skala, shopId);
+                            }
                         }
                     }
+                    Page targetPage = new MainPage();
+
+                    // Wykonaj nawigacjê do docelowej strony.
+                    await Navigation.PushAsync(targetPage);
+
                 }
-            }
-            else
-            {
-                await DisplayAlert("B³¹d", "Nie znaleziono sklepu o AutomationId = 'Sklep'.", "OK");
+                else
+                {
+                    await DisplayAlert("B³¹d", "Nie znaleziono sklepu o ClassId = 'Sklep'.", "OK");
+                }
             }
         }
         private async Task<int> SaveShopToDatabase(BoxView shopBox)
@@ -118,7 +129,27 @@ namespace LokalizacjaWSklepie.Pages
                             selectedShelf.HeightRequest = newHeight * skala;
 
                             // Kod do zmiany typu kontenera zosta³ tutaj pozostawiony
-                            await ChangeContainerType(selectedShelf);
+                            if (selectedShelf.ClassId != "Sklep")
+                            {
+                                await ChangeContainerType(selectedShelf);
+                            switch (selectedShelf.ClassId)
+                            {
+                                case "Pó³ka":
+                                    selectedShelf.Color = Colors.BurlyWood; break;
+
+                                case "Lodówka":
+                                    selectedShelf.Color = Colors.SkyBlue; break;
+                                case "Zamra¿arka":
+                                    selectedShelf.Color = Colors.DeepSkyBlue; break;
+                                case "Stojak":
+                                    selectedShelf.Color = Colors.SaddleBrown; break;
+                                case "Kasa":
+                                    selectedShelf.Color = Colors.Gold; break;
+                                default:
+                                    break;
+                            }
+                            }
+                            
                         }
                         else
                         {
@@ -128,7 +159,7 @@ namespace LokalizacjaWSklepie.Pages
                 }
                 else if (trybUsuwanie)
                 {
-                    if (selectedShelf.AutomationId != "Sklep")
+                    if (selectedShelf.ClassId != "Sklep")
                     {
                         Layout.Children.Remove(selectedShelf);
                     }
@@ -139,7 +170,7 @@ namespace LokalizacjaWSklepie.Pages
         private async Task ChangeContainerType(BoxView selectedShelf)
         {
             // Kod do zmiany typu kontenera zosta³ tutaj pozostawiony
-            List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak" };
+            List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
             string selectedType = await DisplayActionSheet("Wybierz typ kontenera", "Anuluj", null, availableTypes.ToArray());
 
             if (selectedType != "Anuluj")
@@ -152,7 +183,7 @@ namespace LokalizacjaWSklepie.Pages
         {
             // Zaktualizuj typ kontenera bez zapisywania do bazy danych
             // Ta funkcja po prostu aktualizuje typ kontenera w pamiêci, bez operacji bazodanowych
-            selectedShelf.AutomationId = newType; // W tym przyk³adzie u¿ywam AutomationId do przechowywania typu kontenera
+            selectedShelf.ClassId = newType; // W tym przyk³adzie u¿ywam ClassId do przechowywania typu kontenera
         }
 
         private async void MapCreate()
@@ -165,15 +196,14 @@ namespace LokalizacjaWSklepie.Pages
 
                 if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                 {
-                    Color kolorSzary = Color.FromHex("CCCCCC");
                     // Tworzenie prostok¹ta
                     var Sklep = new BoxView
                     {
-                        Color = kolorSzary, // Kolor prostok¹ta
+                        Color = Colors.LightGray, // Kolor prostok¹ta
                         WidthRequest = szerokosc * skala, // Ustawienie szerokoœci na podan¹ wartoœæ
                         HeightRequest = wysokosc * skala // Ustawienie wysokoœci na podan¹ wartoœæ
                     };
-                    Sklep.AutomationId = "Sklep";
+                    Sklep.ClassId = "Sklep";
                     var tapGesture = new TapGestureRecognizer();
                     tapGesture.Tapped += ShelfTapped;
                     Sklep.GestureRecognizers.Add(tapGesture);
@@ -241,17 +271,34 @@ namespace LokalizacjaWSklepie.Pages
 
                 if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                 {
-                    Color kolorFioletowy = Color.FromHex("#9966FF");
+                    
                     // Tworzenie prostok¹ta
                     var prostokat = new BoxView
                     {
-                        Color = kolorFioletowy, // Kolor prostok¹ta
                         WidthRequest = szerokosc * skala, // Ustawienie szerokoœci na podan¹ wartoœæ
-                        HeightRequest = wysokosc * skala // Ustawienie wysokoœci na podan¹ wartoœæ
+                        HeightRequest = wysokosc * skala, // Ustawienie wysokoœci na podan¹ wartoœæ
+                        CornerRadius = new CornerRadius(10)
+
                     };
-                    List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak" };
+                    List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
                     string selectedType = await DisplayActionSheet("Wybierz typ kontenera", "Anuluj", null, availableTypes.ToArray());
-                    prostokat.AutomationId = selectedType;
+                    prostokat.ClassId = selectedType;
+                    switch (prostokat.ClassId)
+                    {
+                        case "Pó³ka":
+                            prostokat.Color = Colors.BurlyWood; break;
+
+                        case "Lodówka":
+                            prostokat.Color = Colors.SkyBlue; break;
+                        case "Zamra¿arka":
+                            prostokat.Color = Colors.DeepSkyBlue; break;
+                        case "Stojak":
+                            prostokat.Color = Colors.SaddleBrown; break;
+                        case "Kasa":
+                            prostokat.Color = Colors.Gold; break;
+                        default:
+                            break;
+                    }
                     // Dodanie obs³ugi zdarzenia klikniêcia na prostok¹t
                     // Dodajemy obs³ugê przesuwania
                     var przesunGestureRecognizer = new PanGestureRecognizer();
@@ -286,11 +333,13 @@ namespace LokalizacjaWSklepie.Pages
             ((Button)sender).Text = buttonText;
         }
 
-        private void SaveMapButton_Clicked(object sender, EventArgs e)
+        private async void SaveMapButton_Clicked(object sender, EventArgs e)
         {
             SaveMapToDatabase();
+
             // Dodaj ewentualne dodatkowe dzia³ania po zapisaniu mapy
             // ...
+
         }
     }
 }
