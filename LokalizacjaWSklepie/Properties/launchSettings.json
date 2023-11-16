@@ -1,6 +1,6 @@
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=KOMPUTER-MANUEL\\SQLEXPRESS;Database=LokalizacjaWSklepie;User Id=Administrator;Password=admin;TrustServerCertificate=true;"
+    "DefaultConnection": "Data Source=lokalizacjawsklepie.cv5pxbaesbr7.eu-central-1.rds.amazonaws.com,1433;Initial Catalog=LokalizacjaWSklepie;User Id=admin;Password=admin123;TrustServerCertificate=true;"
   },
   "profiles": {
     "Windows Machine": {
