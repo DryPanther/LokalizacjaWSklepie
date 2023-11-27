@@ -59,7 +59,7 @@ namespace LokalizacjaWSklepie.Pages
                     Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
 
                     // Przejdü do strony edycji sklepu, przekazujπc ShopId
-                    await Navigation.PushAsync(new MapEditorPage(selectedShop.ShopId));
+                    await Navigation.PushAsync(new MapEditorPage(selectedShop.ShopId, selectedShop.Name));
                 }
             }
             catch (Exception ex)

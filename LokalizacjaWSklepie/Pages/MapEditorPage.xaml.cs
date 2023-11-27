@@ -12,9 +12,12 @@ public partial class MapEditorPage : ContentPage
     private int skala = 100;
     private bool trybUsuwanie = false;
     private int shopId;
+    private List<Container> existingContainerIds = new List<Container> { };
 
-    public MapEditorPage(int shopId)
+
+    public MapEditorPage(int shopId, string name)
     {
+        Title = name;
         InitializeComponent();
         this.shopId = shopId;
         LoadMap();
@@ -43,7 +46,7 @@ public partial class MapEditorPage : ContentPage
                 // Dodawanie kontenerów na podstawie danych z bazy danych
                 foreach (var containerData in containers)
                 {
-                    var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)containerData.CoordinateX, (int)containerData.CoordinateY);
+                    var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)containerData.CoordinateX, (int)containerData.CoordinateY, containerData.ContainerType);
 
                     // Przypisanie Id z bazy danych do kontenera
                     BoxViewExtensions.SetId(containerBox, containerData.ContainerId);
@@ -74,9 +77,9 @@ public partial class MapEditorPage : ContentPage
         return shopBox;
     }
 
-    private BoxView CreateContainerBox(double width, double length, int coordinateX, int coordinateY)
+    private BoxView CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
-        var containerBox = new BoxView
+        var containerBox = new BoxViewExtensions
         {
             WidthRequest = width * skala,
             HeightRequest = length * skala,
@@ -86,6 +89,23 @@ public partial class MapEditorPage : ContentPage
         // Ustawienie wspó³rzêdnych kontenera
         containerBox.TranslationX = coordinateX;
         containerBox.TranslationY = coordinateY;
+        containerBox.ClassId = containerType;
+        switch (containerBox.ClassId)
+        {
+            case "Pó³ka":
+                containerBox.Color = Colors.BurlyWood; break;
+
+            case "Lodówka":
+                containerBox.Color = Colors.SkyBlue; break;
+            case "Zamra¿arka":
+                containerBox.Color = Colors.DeepSkyBlue; break;
+            case "Stojak":
+                containerBox.Color = Colors.SaddleBrown; break;
+            case "Kasa":
+                containerBox.Color = Colors.Gold; break;
+            default:
+                break;
+        }
 
         // Dodanie obs³ugi zdarzenia klikniêcia na kontener
         var przesunGestureRecognizer = new PanGestureRecognizer();
@@ -95,7 +115,7 @@ public partial class MapEditorPage : ContentPage
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += ShelfTapped;
         containerBox.GestureRecognizers.Add(tapGesture);
-
+        Layout.SetRow(containerBox, 1);
         return containerBox;
     }
 
@@ -123,7 +143,7 @@ public partial class MapEditorPage : ContentPage
         using (HttpClient client = new HttpClient())
         {
             // Pobierz dane kontenera
-            var response = await client.GetAsync($"{apiBaseUrl}/api/Containers/{containerId}");
+            var response = await client.GetAsync($"{apiBaseUrl}/api/Containers/GetContainerById/{containerId}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -153,13 +173,16 @@ public partial class MapEditorPage : ContentPage
 
                         if (existingContainer != null)
                         {
+                            existingContainer.ContainerId = containerId;
                             existingContainer.Width = container.Width / skala;
                             existingContainer.Length = container.Height / skala;
                             existingContainer.CoordinateX = (int)container.TranslationX;
                             existingContainer.CoordinateY = (int)container.TranslationY;
+                            existingContainer.ContainerType = container.ClassId;
 
                             await UpdateContainerInDatabase(existingContainer);
                         }
+                        existingContainerIds.Add(existingContainer);
                     }
                     else
                     {
@@ -205,7 +228,8 @@ public partial class MapEditorPage : ContentPage
                 Length = container.Height / skala,
                 CoordinateX = (int)container.TranslationX,
                 CoordinateY = (int)container.TranslationY,
-                ShopId = shopId
+                ShopId = shopId,
+                ContainerType = container.ClassId
             };
 
             string json = JsonConvert.SerializeObject(newContainer);
@@ -213,7 +237,13 @@ public partial class MapEditorPage : ContentPage
 
             var response = await client.PostAsync($"{apiBaseUrl}/api/Containers/AddContainer", content);
 
-            if (!response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
+            {
+                // Jeœli dodanie do bazy danych by³o udane, dodaj nowy kontener do listy existingContainerIds
+                var addedContainer = JsonConvert.DeserializeObject<Container>(await response.Content.ReadAsStringAsync());
+                existingContainerIds.Add(addedContainer);
+            }
+            else
             {
                 // Obs³uga b³êdu
                 throw new Exception("B³¹d podczas dodawania nowego kontenera.");
@@ -399,9 +429,11 @@ public partial class MapEditorPage : ContentPage
     }
     private async void SaveMapButton_Clicked(object sender, EventArgs e)
     {
-        SaveShopChanges();
-        SaveContainerChanges();
-
+        await SaveShopChanges();
+        await SaveContainerChanges();
+        await CheckAndHandleDeletedContainers(existingContainerIds);
+        var ShopListPage = new ShopListPage();
+        await Navigation.PushAsync(ShopListPage);
         // Dodaj ewentualne dodatkowe dzia³ania po zapisaniu mapy
         // ...
 
@@ -422,7 +454,7 @@ public partial class MapEditorPage : ContentPage
             {
 
                 // Tworzenie prostok¹ta
-                var prostokat = new BoxView
+                var prostokat = new BoxViewExtensions
                 {
                     WidthRequest = szerokosc * skala, // Ustawienie szerokoœci na podan¹ wartoœæ
                     HeightRequest = wysokosc * skala, // Ustawienie wysokoœci na podan¹ wartoœæ
@@ -491,6 +523,32 @@ public partial class MapEditorPage : ContentPage
                 // Obs³uga b³êdu
                 throw new Exception("B³¹d podczas pobierania kontenerów z bazy danych.");
             }
+        }
+    }
+    private async Task CheckAndHandleDeletedContainers(List<Container> existingContainerIds)
+    {
+        try
+        {
+            var containersInDatabase = await GetContainersByShopIdFromDatabase(shopId);
+
+            // ZnajdŸ kontenery, które istniej¹ w bazie danych, ale nie ma ich w liœcie allContainersForShop
+            var missingContainers = containersInDatabase
+                .Where(dbContainer => existingContainerIds.All(uiContainer => uiContainer.ContainerId != dbContainer.ContainerId))
+                .ToList();
+
+            // Dla ka¿dego kontenera, który zosta³ usuniêty z interfejsu u¿ytkownika, ustaw wartoœci na null
+            foreach (var missingContainer in missingContainers)
+            {
+                missingContainer.ShopId = null;
+                missingContainer.CoordinateX = null;
+                missingContainer.CoordinateY = null;
+
+                await UpdateContainerInDatabase(missingContainer);
+            }
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"B³¹d podczas aktualizowania brakuj¹cych kontenerów: {ex.Message}");
         }
     }
 }
