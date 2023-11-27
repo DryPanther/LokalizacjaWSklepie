@@ -1,5 +1,36 @@
-﻿using System;
+﻿
+/* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-android)”
+Przed:
+using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+Po:
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+*/
+
+/* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-windows10.0.19041.0)”
+Przed:
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+Po:
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+*/
+
+/* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-maccatalyst)”
+Przed:
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+Po:
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+*/
 using Microsoft.EntityFrameworkCore;
 
 namespace LokalizacjaWSklepie.Models;

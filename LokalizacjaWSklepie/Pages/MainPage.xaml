@@ -6,6 +6,7 @@
 
     <StackLayout>
         <Button Text="Stwórz mapę" x:Name="Create" Clicked="Create_Clicked"/>
+        <Button Text="Edytuj mapę" x:Name="Edit" Clicked="Edit_Clicked"/>
     </StackLayout>
 
 </ContentPage>

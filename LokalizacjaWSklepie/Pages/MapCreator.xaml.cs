@@ -1,123 +1,142 @@
 using LokalizacjaWSklepie.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using LokalizacjaWSklepie.Properties;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace LokalizacjaWSklepie.Pages
 {
     public partial class MapCreator : ContentPage
     {
+        private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
         int skala = 100;
         bool trybUsuwanie = false;
-        private LokalizacjaWsklepieContext dbContext = new LokalizacjaWsklepieContext();
+
         public MapCreator()
         {
             InitializeComponent();
             MapCreate();
         }
 
-        private async void SaveContainerToDatabase(BoxView container, double width, double height, int shopId)
+        private async Task SaveContainerToDatabase(BoxView container, double width, double height, int shopId)
         {
-            using (var dbContext = new LokalizacjaWsklepieContext())
+            var newContainer = new Container
             {
-                // Utwórz nowy kontener na podstawie danych wprowadzonych przez u¿ytkownika
-                var newContainer = new Container
-                {
-                    ContainerType = container.ClassId, // Okreœl odpowiedni typ kontenera
-                    Width = width,
-                    Length = height,
-                    CoordinateX = (int)container.TranslationX, // Konwertuj do int, aby pasowa³o do modelu danych
-                    CoordinateY = (int)container.TranslationY,
-                    ShopId = shopId // Przypisz ShopId do kontenera
-                };
+                ContainerType = container.ClassId,
+                Width = width,
+                Length = height,
+                CoordinateX = (int)container.TranslationX,
+                CoordinateY = (int)container.TranslationY,
+                ShopId = shopId
+            };
 
-                // Dodaj kontener do bazy danych
-                dbContext.Containers.Add(newContainer);
-                await dbContext.SaveChangesAsync();
-            }
-        }
-
-        private async void SaveMapToDatabase()
-        {
-            using (var dbContext = new LokalizacjaWsklepieContext())
+            using (HttpClient client = new HttpClient())
             {
-                // Pobierz sklep z Layoutu
-                var shopBox = Layout.Children.FirstOrDefault(child => child is BoxView box && box.ClassId == "Sklep") as BoxView;
+                string json = JsonConvert.SerializeObject(newContainer);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                if (shopBox != null)
+                var response = await client.PostAsync($"{apiBaseUrl}/api/Containers/AddContainer", content);
+
+                if (response.IsSuccessStatusCode)
                 {
-                    // Zapisz sklep do bazy danych i pobierz nadane ShopId
-                    int shopId = await SaveShopToDatabase(shopBox);
-                    // Iteruj przez wszystkie elementy w Layout
-                    foreach (var child in Layout.Children)
-                    {
-                        if (child is BoxView container)
-                        {
-                            // SprawdŸ, czy to kontener (mo¿esz u¿yæ ClassId lub innego mechanizmu identyfikacji)
-                            if (container.ClassId != "Sklep")
-                            {
-                                // Zapisz kontener do bazy danych, przekazuj¹c ShopId
-                                SaveContainerToDatabase(container, container.Width / skala, container.Height / skala, shopId);
-                            }
-                        }
-                    }
-                    Page targetPage = new MainPage();
-
-                    // Wykonaj nawigacjê do docelowej strony.
-                    await Navigation.PushAsync(targetPage);
-
+                    // Operacja zakoñczona powodzeniem
                 }
                 else
                 {
-                    await DisplayAlert("B³¹d", "Nie znaleziono sklepu o ClassId = 'Sklep'.", "OK");
+                    // Obs³uga b³êdu
+                    await DisplayAlert("B³¹d", "Nie uda³o siê zapisaæ kontenera.", "OK");
                 }
             }
         }
+
         private async Task<int> SaveShopToDatabase(BoxView shopBox)
         {
-            var newShop = new Shop
+            try
             {
-                Width = shopBox.Width / skala,
-                Length = shopBox.Height / skala
-            };
+                var newShop = new Shop
+                {
+                    Width = shopBox.Width / skala,
+                    Length = shopBox.Height / skala
+                };
 
-            // Pobierz dane od u¿ytkownika dla poszczególnych pól
-            newShop.Name = await DisplayPromptAsync("Nowy sklep", "Podaj nazwê sklepu:");
+                newShop.Name = await DisplayPromptAsync("Nowy sklep", "Podaj nazwê sklepu:");
 
-            // SprawdŸ, czy u¿ytkownik nacisn¹³ Anuluj lub nie wpisa³ nic
-            if (newShop.Name == null)
-            {
-                // Anulowano lub nie wpisano wartoœci, zakoñcz operacjê
-                return -1; // Wartoœæ -1 jako oznaczenie niepowodzenia
+                if (newShop.Name == null)
+                {
+                    return -1;
+                }
+
+                newShop.City = await DisplayPromptAsync("Nowy sklep", "Podaj miasto:");
+                if (newShop.City == null) return -1;
+
+                newShop.Street = await DisplayPromptAsync("Nowy sklep", "Podaj ulicê:");
+                if (newShop.Street == null) return -1;
+
+                newShop.PostalCode = await DisplayPromptAsync("Nowy sklep", "Podaj kod pocztowy:");
+                if (newShop.PostalCode == null) return -1;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    string json = JsonConvert.SerializeObject(newShop);
+                    StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync($"{apiBaseUrl}/api/Shops/AddShop", content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadAsStringAsync();
+                        var shop = JsonConvert.DeserializeObject<Shop>(responseData);
+
+                        // Teraz masz dostêp do shopId
+                        var shopId = shop.ShopId;
+
+                        return shopId;
+                    }
+                    else
+                    {
+                        // Obs³uga b³êdu
+                        await DisplayAlert("B³¹d", "Nie uda³o siê zapisaæ sklepu.", "OK");
+                        return -1;
+                    }
+                }
             }
+            catch (Exception ex)
+            {
 
-            newShop.City = await DisplayPromptAsync("Nowy sklep", "Podaj miasto:");
-            if (newShop.City == null) return -1;
-
-            newShop.Street = await DisplayPromptAsync("Nowy sklep", "Podaj ulicê:");
-            if (newShop.Street == null) return -1;
-
-            newShop.PostalCode = await DisplayPromptAsync("Nowy sklep", "Podaj kod pocztowy:");
-            if (newShop.PostalCode == null) return -1;
-
-            // Dodaj sklep do bazy danych
-            dbContext.Shops.Add(newShop);
-
-            // Zapisz zmiany w bazie danych, aby uzyskaæ dostêp do nadanego identyfikatora
-            await dbContext.SaveChangesAsync();
-
-            // Zwróæ nadane ShopId
-            return newShop.ShopId;
+                Console.WriteLine($"Wyst¹pi³ b³¹d: {ex.Message}");
+                return -1;
+            }
         }
+        private async Task SaveMapToDatabase()
+        {
+            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxView box && box.ClassId == "Sklep") as BoxView;
 
+            if (shopBox != null)
+            {
+                int shopId = await SaveShopToDatabase(shopBox);
+
+                foreach (var child in Layout.Children)
+                {
+                    if (child is BoxView container && container.ClassId != "Sklep")
+                    {
+                        await SaveContainerToDatabase(container, container.Width / skala, container.Height / skala, shopId);
+                    }
+                }
+
+                Page targetPage = new MainPage();
+                await Navigation.PushAsync(targetPage);
+            }
+            else
+            {
+                await DisplayAlert("B³¹d", "Nie znaleziono sklepu o ClassId = 'Sklep'.", "OK");
+            }
+        }
         private async void ShelfTapped(object sender, EventArgs e)
         {
             if (sender is BoxView selectedShelf)
             {
                 if (!trybUsuwanie)
                 {
-                    string dimensionsInput = await DisplayPromptAsync("Zmiana rozmiaru", "Podaj nowe wymiary (szerokoœæ x wysokoœæ):");
+                    string dimensionsInput = await DisplayPromptAsync("Zmiana rozmiaru", "Podaj nowe wymiary (szerokoœæ x wysokoœæ):", "Ok", "Cancel", $"{selectedShelf.Width / skala}x{selectedShelf.Height / skala}");
 
                     if (!string.IsNullOrEmpty(dimensionsInput))
                     {
@@ -132,24 +151,24 @@ namespace LokalizacjaWSklepie.Pages
                             if (selectedShelf.ClassId != "Sklep")
                             {
                                 await ChangeContainerType(selectedShelf);
-                            switch (selectedShelf.ClassId)
-                            {
-                                case "Pó³ka":
-                                    selectedShelf.Color = Colors.BurlyWood; break;
+                                switch (selectedShelf.ClassId)
+                                {
+                                    case "Pó³ka":
+                                        selectedShelf.Color = Colors.BurlyWood; break;
 
-                                case "Lodówka":
-                                    selectedShelf.Color = Colors.SkyBlue; break;
-                                case "Zamra¿arka":
-                                    selectedShelf.Color = Colors.DeepSkyBlue; break;
-                                case "Stojak":
-                                    selectedShelf.Color = Colors.SaddleBrown; break;
-                                case "Kasa":
-                                    selectedShelf.Color = Colors.Gold; break;
-                                default:
-                                    break;
+                                    case "Lodówka":
+                                        selectedShelf.Color = Colors.SkyBlue; break;
+                                    case "Zamra¿arka":
+                                        selectedShelf.Color = Colors.DeepSkyBlue; break;
+                                    case "Stojak":
+                                        selectedShelf.Color = Colors.SaddleBrown; break;
+                                    case "Kasa":
+                                        selectedShelf.Color = Colors.Gold; break;
+                                    default:
+                                        break;
+                                }
                             }
-                            }
-                            
+
                         }
                         else
                         {
@@ -225,11 +244,6 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private void RemoveContainerFromMemory(BoxView container)
-        {
-            // Usuñ kontener z pamiêci (jeœli to konieczne)
-            // Ta funkcja nie wykonuje operacji bazodanowych
-        }
 
         private bool przesuwanie = false;
         private double poprzedniaX, poprzedniaY;
@@ -271,7 +285,7 @@ namespace LokalizacjaWSklepie.Pages
 
                 if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                 {
-                    
+
                     // Tworzenie prostok¹ta
                     var prostokat = new BoxView
                     {
