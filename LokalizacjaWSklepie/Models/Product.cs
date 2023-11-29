@@ -8,7 +8,7 @@ public partial class Product
 
     public double BasePrice { get; set; }
 
-    public int Barcode { get; set; }
+    public string Barcode { get; set; }
 
     public string QuantityType { get; set; }
 

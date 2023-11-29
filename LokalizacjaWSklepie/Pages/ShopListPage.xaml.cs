@@ -1,20 +1,24 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Net.Http;
+using System.Threading.Tasks;
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
-using System.Collections.ObjectModel;
 
 namespace LokalizacjaWSklepie.Pages
 {
     public partial class ShopListPage : ContentPage
     {
         private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
-
-        public ObservableCollection<Shop> Shops { get; set; }
+        private ObservableCollection<Shop> shops;
 
         public ShopListPage()
         {
             InitializeComponent();
-            Shops = new ObservableCollection<Shop>();
+            shops = new ObservableCollection<Shop>();
+            ShopsListView.ItemsSource = shops;
             LoadShops();
         }
 
@@ -29,14 +33,15 @@ namespace LokalizacjaWSklepie.Pages
                     if (response.IsSuccessStatusCode)
                     {
                         var responseData = await response.Content.ReadAsStringAsync();
-                        var shops = JsonConvert.DeserializeObject<List<Shop>>(responseData);
+                        var shopList = JsonConvert.DeserializeObject<List<Shop>>(responseData);
 
-                        foreach (var shop in shops)
+                        shops.Clear();
+                        foreach (var shop in shopList)
                         {
-                            Shops.Add(shop);
+                            shops.Add(shop);
                         }
 
-                        ShopsListView.ItemsSource = Shops;
+                        ShopsListView.ItemsSource = shops;
                     }
                     else
                     {
@@ -58,13 +63,83 @@ namespace LokalizacjaWSklepie.Pages
                 {
                     Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
 
-                    // Przejdü do strony edycji sklepu, przekazujπc ShopId
                     await Navigation.PushAsync(new MapEditorPage(selectedShop.ShopId, selectedShop.Name));
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception in ShopsListView_ItemTapped: {ex.Message}");
+            }
+        }
+
+        private async void Create_Clicked(object sender, EventArgs e)
+        {
+            var MapCreator = new MapCreator();
+            await Navigation.PushAsync(MapCreator);
+        }
+
+        private async void Back_Clicked(object sender, EventArgs e)
+        {
+            var MainPage = new MainPage();
+            await Navigation.PushAsync(MainPage);
+        }
+
+        private async void OnShopSearchButtonPressed(object sender, EventArgs e)
+        {
+            string searchText = shopSearchBar.Text;
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                await SearchShops(searchText);
+            }
+            else
+            {
+                LoadShops();
+            }
+        }
+
+        private async void OnShopSearchTextChanged(object sender, TextChangedEventArgs e)
+        {
+            string searchText = e.NewTextValue;
+
+            if (!string.IsNullOrWhiteSpace(searchText))
+            {
+                await SearchShops(searchText);
+            }
+            else
+            {
+                LoadShops();
+            }
+        }
+
+        private async Task SearchShops(string searchText)
+        {
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    var response = await client.GetAsync($"{apiBaseUrl}/api/Shops/SearchShops/{searchText}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadAsStringAsync();
+                        var shopList = JsonConvert.DeserializeObject<List<Shop>>(responseData);
+
+                        shops.Clear();
+                        foreach (var shop in shopList)
+                        {
+                            shops.Add(shop);
+                        }
+                    }
+                    else
+                    {
+                        await DisplayAlert("Error", "Failed to retrieve shops", "OK");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
             }
         }
     }

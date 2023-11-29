@@ -12,17 +12,18 @@ public partial class MainPage : ContentPage
     }
 
 
-    private async void Create_Clicked(object sender, EventArgs e)
-    {
 
-        var mapCreator = new MapCreator();
-        await Navigation.PushAsync(mapCreator);
-    }
-
-    private async void Edit_Clicked(object sender, EventArgs e)
+    private async void Shops_Clicked(object sender, EventArgs e)
     {
         var ShopListPage = new ShopListPage();
         await Navigation.PushAsync(ShopListPage);
+    }
+
+
+    private async void Products_Clicked(object sender, EventArgs e)
+    {
+        var ProductsPage = new ProductsPage();
+        await Navigation.PushAsync(ProductsPage);
     }
 }
 

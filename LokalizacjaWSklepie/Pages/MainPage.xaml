@@ -5,8 +5,8 @@
              Title="Home">
 
     <StackLayout>
-        <Button Text="Stwórz mapę" x:Name="Create" Clicked="Create_Clicked"/>
-        <Button Text="Edytuj mapę" x:Name="Edit" Clicked="Edit_Clicked"/>
+        <Button Text="Sklepy" x:Name="Create" Clicked="Shops_Clicked"/>
+        <Button Text="Produkty" x:Name="Products" Clicked="Products_Clicked"/>
     </StackLayout>
 
 </ContentPage>

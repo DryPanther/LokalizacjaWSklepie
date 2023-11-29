@@ -5,16 +5,21 @@
              Title="ShopListPage">
     <ScrollView>
     <VerticalStackLayout>
+            <Button Text="Stwórz sklep" x:Name="Create" Clicked="Create_Clicked"/>
+            <Button Text="Powrót" x:Name="Back" Clicked="Back_Clicked"/>
+            <SearchBar x:Name="shopSearchBar" Placeholder="Wyszukaj sklep..." SearchButtonPressed="OnShopSearchButtonPressed" TextChanged="OnShopSearchTextChanged" />
             <ListView x:Name="ShopsListView" ItemTapped="ShopsListView_ItemTapped">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Orientation="Horizontal">
                                 <Label Text="{Binding Name}" FontAttributes="Bold" />
+                                <Label Text="&#9;" />
                                 <Label Text="{Binding City}" />
+                                <Label Text="&#9;" />
                                 <Label Text="{Binding Street}" />
+                                <Label Text="&#9;" />
                                 <Label Text="{Binding PostalCode}" />
-                                <!-- Dodaj inne właściwości Shop, jakie chcesz wyświetlić -->
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

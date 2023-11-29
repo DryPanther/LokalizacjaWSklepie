@@ -38,12 +38,10 @@ namespace LokalizacjaWSklepie.Pages
 
                 if (response.IsSuccessStatusCode)
                 {
-                    // Operacja zakoñczona powodzeniem
                 }
                 else
                 {
-                    // Obs³uga b³êdu
-                    await DisplayAlert("B³¹d", "Nie uda³o siê zapisaæ kontenera.", "OK");
+                    await DisplayAlert("B³¹d", "Nie uda³o siê zapisaæ pojemnika.", "OK");
                 }
             }
         }
@@ -147,7 +145,6 @@ namespace LokalizacjaWSklepie.Pages
                             selectedShelf.WidthRequest = newWidth * skala;
                             selectedShelf.HeightRequest = newHeight * skala;
 
-                            // Kod do zmiany typu kontenera zosta³ tutaj pozostawiony
                             if (selectedShelf.ClassId != "Sklep")
                             {
                                 await ChangeContainerType(selectedShelf);
@@ -180,7 +177,12 @@ namespace LokalizacjaWSklepie.Pages
                 {
                     if (selectedShelf.ClassId != "Sklep")
                     {
-                        Layout.Children.Remove(selectedShelf);
+                        bool shouldDelete = await DisplayAlert("PotwierdŸ usuniêcie", "Czy na pewno chcesz usun¹æ ten pojemnik?", "Tak", "Anuluj");
+
+                        if (shouldDelete)
+                        {
+                            Layout.Children.Remove(selectedShelf);
+                        }
                     }
                 }
             }
@@ -188,9 +190,8 @@ namespace LokalizacjaWSklepie.Pages
 
         private async Task ChangeContainerType(BoxView selectedShelf)
         {
-            // Kod do zmiany typu kontenera zosta³ tutaj pozostawiony
             List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
-            string selectedType = await DisplayActionSheet("Wybierz typ kontenera", "Anuluj", null, availableTypes.ToArray());
+            string selectedType = await DisplayActionSheet("Wybierz typ pojemnika", "Anuluj", null, availableTypes.ToArray());
 
             if (selectedType != "Anuluj")
             {
@@ -200,48 +201,51 @@ namespace LokalizacjaWSklepie.Pages
 
         private void UpdateContainerTypeInMemory(BoxView selectedShelf, string newType)
         {
-            // Zaktualizuj typ kontenera bez zapisywania do bazy danych
-            // Ta funkcja po prostu aktualizuje typ kontenera w pamiêci, bez operacji bazodanowych
-            selectedShelf.ClassId = newType; // W tym przyk³adzie u¿ywam ClassId do przechowywania typu kontenera
+            selectedShelf.ClassId = newType; 
         }
 
         private async void MapCreate()
         {
             string dimensionsInput = await DisplayPromptAsync("Tworzenie sklepu", "Podaj wymiary (szerokoœæ x wysokoœæ):");
-
-            if (!string.IsNullOrEmpty(dimensionsInput))
+            if (dimensionsInput == null)
             {
-                string[] dimensions = dimensionsInput.Split('x');
-
-                if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
-                {
-                    // Tworzenie prostok¹ta
-                    var Sklep = new BoxView
-                    {
-                        Color = Colors.LightGray, // Kolor prostok¹ta
-                        WidthRequest = szerokosc * skala, // Ustawienie szerokoœci na podan¹ wartoœæ
-                        HeightRequest = wysokosc * skala // Ustawienie wysokoœci na podan¹ wartoœæ
-                    };
-                    Sklep.ClassId = "Sklep";
-                    var tapGesture = new TapGestureRecognizer();
-                    tapGesture.Tapped += ShelfTapped;
-                    Sklep.GestureRecognizers.Add(tapGesture);
-
-                    // Dodanie prostok¹ta do interfejsu u¿ytkownika (np. do StackLayout lub Grid)
-                    Layout.SetRow(Sklep, 1);
-                    Layout.Children.Add(Sklep); // "MojeLayout" to kontener, do którego chcemy dodaæ prostok¹t.
-                    // SaveContainerToDatabase(Sklep, szerokosc, wysokosc); // Ta funkcja zosta³a zakomentowana
-                }
-                else
-                {
-                    await DisplayAlert("B³¹d", "WprowadŸ poprawne wartoœci liczbowe w formacie 'szerokoœæ x wysokoœæ'.", "OK");
-                }
+                await Navigation.PopAsync();
             }
             else
             {
-                // Obs³uga przypadku, gdy u¿ytkownik nie wprowadzi³ ¿adnych wymiarów.
-                await DisplayAlert("B³¹d", "WprowadŸ wymiary.", "OK");
+                if (!string.IsNullOrEmpty(dimensionsInput))
+                {
+                    string[] dimensions = dimensionsInput.Split('x');
+
+                    if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
+                    {
+                        var Sklep = new BoxView
+                        {
+                            Color = Colors.LightGray,
+                            WidthRequest = szerokosc * skala,
+                            HeightRequest = wysokosc * skala 
+                        };
+                        Sklep.ClassId = "Sklep";
+                        var tapGesture = new TapGestureRecognizer();
+                        tapGesture.Tapped += ShelfTapped;
+                        Sklep.GestureRecognizers.Add(tapGesture);
+
+                        Layout.SetRow(Sklep, 1);
+                        Layout.Children.Add(Sklep); 
+                    }
+                    else
+                    {
+                        await DisplayAlert("B³¹d", "WprowadŸ poprawne wartoœci liczbowe w formacie 'szerokoœæ x wysokoœæ'.", "OK");
+                        MapCreate();
+                    }
+                }
+                else
+                {
+                    await DisplayAlert("B³¹d", "WprowadŸ wymiary.", "OK");
+                    MapCreate();
+                }
             }
+           
         }
 
 
@@ -275,7 +279,7 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private async void AddRectangle_Clicked(object sender, EventArgs e)
+        private async void AddContainer_Clicked(object sender, EventArgs e)
         {
             string dimensionsResult = await DisplayPromptAsync("Dodawanie pojemnika", "Podaj wymiary (szerokoœæ x wysokoœæ):");
 
@@ -285,17 +289,19 @@ namespace LokalizacjaWSklepie.Pages
 
                 if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                 {
-
-                    // Tworzenie prostok¹ta
                     var prostokat = new BoxView
                     {
-                        WidthRequest = szerokosc * skala, // Ustawienie szerokoœci na podan¹ wartoœæ
-                        HeightRequest = wysokosc * skala, // Ustawienie wysokoœci na podan¹ wartoœæ
+                        WidthRequest = szerokosc * skala, 
+                        HeightRequest = wysokosc * skala, 
                         CornerRadius = new CornerRadius(10)
 
                     };
                     List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
-                    string selectedType = await DisplayActionSheet("Wybierz typ kontenera", "Anuluj", null, availableTypes.ToArray());
+                    string selectedType = await DisplayActionSheet("Wybierz typ pojemnika", "Anuluj", null, availableTypes.ToArray());
+                    if (string.IsNullOrEmpty(selectedType))
+                    {
+                        return;
+                    }
                     prostokat.ClassId = selectedType;
                     switch (prostokat.ClassId)
                     {
@@ -313,8 +319,6 @@ namespace LokalizacjaWSklepie.Pages
                         default:
                             break;
                     }
-                    // Dodanie obs³ugi zdarzenia klikniêcia na prostok¹t
-                    // Dodajemy obs³ugê przesuwania
                     var przesunGestureRecognizer = new PanGestureRecognizer();
                     przesunGestureRecognizer.PanUpdated += PrzesunProstokat;
                     prostokat.GestureRecognizers.Add(przesunGestureRecognizer);
@@ -323,10 +327,8 @@ namespace LokalizacjaWSklepie.Pages
                     tapGesture.Tapped += ShelfTapped;
                     prostokat.GestureRecognizers.Add(tapGesture);
 
-                    // Dodanie prostok¹ta do interfejsu u¿ytkownika (np. do StackLayout lub Grid)
                     Layout.SetRow(prostokat, 1);
-                    Layout.Children.Add(prostokat); // "MojeLayout" to kontener, do którego chcemy dodaæ prostok¹t.
-                    // SaveContainerToDatabase(prostokat, szerokosc, wysokosc, dbContext.Shops.Find(1)); // Ta funkcja zosta³a zakomentowana
+                    Layout.Children.Add(prostokat); 
                 }
                 else
                 {
@@ -335,7 +337,6 @@ namespace LokalizacjaWSklepie.Pages
             }
             else
             {
-                // Obs³uga przypadku, gdy u¿ytkownik nie wprowadzi³ ¿adnych wymiarów.
                 await DisplayAlert("B³¹d", "WprowadŸ wymiary.", "OK");
             }
         }
@@ -347,13 +348,15 @@ namespace LokalizacjaWSklepie.Pages
             ((Button)sender).Text = buttonText;
         }
 
+        private async void Back_Clicked(object sender, EventArgs e)
+        {
+            var ShopListPage = new ShopListPage();
+            await Navigation.PushAsync(ShopListPage);
+        }
+
         private async void SaveMapButton_Clicked(object sender, EventArgs e)
         {
-            SaveMapToDatabase();
-
-            // Dodaj ewentualne dodatkowe dzia³ania po zapisaniu mapy
-            // ...
-
+            await SaveMapToDatabase();
         }
     }
 }

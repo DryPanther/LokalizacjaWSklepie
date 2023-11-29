@@ -14,8 +14,8 @@
             Padding="30,0"
             VerticalOptions="Center"
             Grid.Row="0">
-
-            <Button Text="Dodaj pojemnik" Clicked="AddRectangle_Clicked" />
+                <Button Text="Powrót" x:Name="Back" Clicked="Back_Clicked" />
+                <Button Text="Dodaj pojemnik" Clicked="AddContainer_Clicked" />
             <Button Text="Przełącz tryb usuwania" Clicked="SwitchModeButton_Clicked" />
                 <Button Text="Zapisz Mapę" Clicked="SaveMapButton_Clicked" />
             </VerticalStackLayout>
