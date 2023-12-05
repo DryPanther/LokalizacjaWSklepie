@@ -13,13 +13,15 @@ namespace LokalizacjaWSklepie.Pages
     {
         private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
         private ObservableCollection<Shop> shops;
+        private string chose;
 
-        public ShopListPage()
+        public ShopListPage(string choice)
         {
             InitializeComponent();
             shops = new ObservableCollection<Shop>();
             ShopsListView.ItemsSource = shops;
             LoadShops();
+            chose = choice;
         }
 
         private async void LoadShops()
@@ -61,9 +63,19 @@ namespace LokalizacjaWSklepie.Pages
             {
                 if (e.Item is Shop selectedShop)
                 {
-                    Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
+                    if (chose == "EditShops")
+                    {
+                        Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
 
-                    await Navigation.PushAsync(new MapEditorPage(selectedShop.ShopId, selectedShop.Name));
+                        await Navigation.PushAsync(new MapEditorPage(selectedShop.ShopId, selectedShop.Name));
+                    }
+                    if (chose == "EditProductContaiiners")
+                    {
+                        Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
+
+                        await Navigation.PushAsync(new EditProductContainersPage(selectedShop.ShopId, selectedShop.Name));
+                    }
+
                 }
             }
             catch (Exception ex)

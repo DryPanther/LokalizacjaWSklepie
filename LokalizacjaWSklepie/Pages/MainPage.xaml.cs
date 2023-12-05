@@ -15,7 +15,7 @@ public partial class MainPage : ContentPage
 
     private async void Shops_Clicked(object sender, EventArgs e)
     {
-        var ShopListPage = new ShopListPage();
+        var ShopListPage = new ShopListPage("EditShops");
         await Navigation.PushAsync(ShopListPage);
     }
 
@@ -24,6 +24,12 @@ public partial class MainPage : ContentPage
     {
         var ProductsPage = new ProductsPage();
         await Navigation.PushAsync(ProductsPage);
+    }
+
+    private async void ProductContainers_Clicked(object sender, EventArgs e)
+    {
+        var ShopListPage = new ShopListPage("EditProductContaiiners");
+        await Navigation.PushAsync(ShopListPage);
     }
 }
 

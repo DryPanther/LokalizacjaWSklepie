@@ -350,7 +350,7 @@ namespace LokalizacjaWSklepie.Pages
 
         private async void Back_Clicked(object sender, EventArgs e)
         {
-            var ShopListPage = new ShopListPage();
+            var ShopListPage = new ShopListPage("EditShops");
             await Navigation.PushAsync(ShopListPage);
         }
 

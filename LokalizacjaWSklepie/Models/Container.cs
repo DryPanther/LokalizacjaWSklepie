@@ -1,4 +1,7 @@
-﻿namespace LokalizacjaWSklepie.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace LokalizacjaWSklepie.Models;
 
 public partial class Container
 {
@@ -16,7 +19,7 @@ public partial class Container
 
     public int? CoordinateY { get; set; }
 
-    public virtual Shop Shop { get; set; }
+    public virtual ICollection<ProductContainer> ProductContainers { get; set; } = new List<ProductContainer>();
 
-    public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+    public virtual Shop? Shop { get; set; }
 }

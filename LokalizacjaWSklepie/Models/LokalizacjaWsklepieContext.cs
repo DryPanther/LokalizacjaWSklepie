@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace LokalizacjaWSklepie.Models;
 
@@ -16,6 +18,8 @@ public partial class LokalizacjaWsklepieContext : DbContext
     public virtual DbSet<Container> Containers { get; set; }
 
     public virtual DbSet<Product> Products { get; set; }
+
+    public virtual DbSet<ProductContainer> ProductContainers { get; set; }
 
     public virtual DbSet<ProductQuantity> ProductQuantities { get; set; }
 
@@ -38,27 +42,14 @@ public partial class LokalizacjaWsklepieContext : DbContext
             entity.HasOne(d => d.Shop).WithMany(p => p.Containers)
                 .HasForeignKey(d => d.ShopId)
                 .HasConstraintName("FK_Containers_Shops");
-
-            entity.HasMany(d => d.Products).WithMany(p => p.Containers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "ProductContainer",
-                    r => r.HasOne<Product>().WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_ProductContainers_Products"),
-                    l => l.HasOne<Container>().WithMany()
-                        .HasForeignKey("ContainerId")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_ProductContainers_Containers"),
-                    j =>
-                    {
-                        j.HasKey("ContainerId", "ProductId");
-                        j.ToTable("ProductContainers");
-                    });
         });
 
         modelBuilder.Entity<Product>(entity =>
         {
+            entity.Property(e => e.Barcode)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(50)
@@ -67,6 +58,21 @@ public partial class LokalizacjaWsklepieContext : DbContext
                 .IsRequired()
                 .HasMaxLength(10)
                 .IsFixedLength();
+        });
+
+        modelBuilder.Entity<ProductContainer>(entity =>
+        {
+            entity.HasKey(e => new { e.ContainerId, e.ProductId });
+
+            entity.HasOne(d => d.Container).WithMany(p => p.ProductContainers)
+                .HasForeignKey(d => d.ContainerId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductContainers_Containers");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ProductContainers)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ProductContainers_Products");
         });
 
         modelBuilder.Entity<ProductQuantity>(entity =>

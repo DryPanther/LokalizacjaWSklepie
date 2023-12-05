@@ -1,4 +1,7 @@
-﻿namespace LokalizacjaWSklepie.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace LokalizacjaWSklepie.Models;
 
 public partial class User
 {

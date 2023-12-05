@@ -76,8 +76,10 @@ public partial class MapEditorPage : ContentPage
         {
             WidthRequest = width * skala,
             HeightRequest = length * skala,
-            CornerRadius = new CornerRadius(10)
+            CornerRadius = new CornerRadius(10),
+
         };
+
 
         containerBox.TranslationX = coordinateX;
         containerBox.TranslationY = coordinateY;
@@ -218,6 +220,8 @@ public partial class MapEditorPage : ContentPage
             StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await client.PostAsync($"{apiBaseUrl}/api/Containers/AddContainer", content);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseContent);
 
             if (response.IsSuccessStatusCode)
             {
@@ -399,7 +403,7 @@ public partial class MapEditorPage : ContentPage
         await SaveShopChanges();
         await SaveContainerChanges();
         await CheckAndHandleDeletedContainers(existingContainerIds);
-        var ShopListPage = new ShopListPage();
+        var ShopListPage = new ShopListPage("EditShops");
         await Navigation.PushAsync(ShopListPage);
     }
     private int? GetShopIdFromMemory(BoxView shopBox)
@@ -506,7 +510,7 @@ public partial class MapEditorPage : ContentPage
     }
     private async void Back_Clicked(object sender, EventArgs e)
     {
-        var ShopListPage = new ShopListPage();
+        var ShopListPage = new ShopListPage("EditShops");
         await Navigation.PushAsync(ShopListPage);
     }
     private async void DeleteShopButton_Clicked(object sender, EventArgs e)
@@ -519,7 +523,7 @@ public partial class MapEditorPage : ContentPage
             {
                 await DeleteAllContainersForShopFromDatabase();
                 await DeleteShopFromDatabase();
-                var ShopListPage = new ShopListPage();
+                var ShopListPage = new ShopListPage("EditShops");
                 await Navigation.PushAsync(ShopListPage);
             }
             catch (Exception ex)
