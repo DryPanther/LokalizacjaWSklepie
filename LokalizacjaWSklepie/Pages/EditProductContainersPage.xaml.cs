@@ -64,13 +64,14 @@ public partial class EditProductContainersPage : ContentPage
         return shopBox;
     }
 
-    private BoxView CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
+    private Frame CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
         var containerBox = new BoxViewExtensions
         {
             WidthRequest = width * skala,
             HeightRequest = length * skala,
-            CornerRadius = new CornerRadius(10)
+            CornerRadius = 10,
+            BorderColor = Colors.Black,
         };
 
         containerBox.TranslationX = coordinateX;
@@ -79,16 +80,16 @@ public partial class EditProductContainersPage : ContentPage
         switch (containerBox.ClassId)
         {
             case "Pó³ka":
-                containerBox.Color = Colors.BurlyWood; break;
+                containerBox.BackgroundColor = Colors.BurlyWood; break;
 
             case "Lodówka":
-                containerBox.Color = Colors.SkyBlue; break;
+                containerBox.BackgroundColor = Colors.SkyBlue; break;
             case "Zamra¿arka":
-                containerBox.Color = Colors.DeepSkyBlue; break;
+                containerBox.BackgroundColor = Colors.DeepSkyBlue; break;
             case "Stojak":
-                containerBox.Color = Colors.SaddleBrown; break;
+                containerBox.BackgroundColor = Colors.SaddleBrown; break;
             case "Kasa":
-                containerBox.Color = Colors.Gold; break;
+                containerBox.BackgroundColor = Colors.Gold; break;
             default:
                 break;
         }
@@ -113,23 +114,6 @@ public partial class EditProductContainersPage : ContentPage
             else
             {
                 throw new Exception("B³¹d podczas pobierania danych mapy ze sklepu.");
-            }
-        }
-    }
-    private async Task<Container> GetContainerFromDatabase(int containerId)
-    {
-        using (HttpClient client = new HttpClient())
-        {
-            var response = await client.GetAsync($"{apiBaseUrl}/api/Containers/GetContainerById/{containerId}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseData = await response.Content.ReadAsStringAsync();
-                return JsonConvert.DeserializeObject<Container>(responseData);
-            }
-            else
-            {
-                throw new Exception("B³¹d podczas pobierania danych pojemnika.");
             }
         }
     }

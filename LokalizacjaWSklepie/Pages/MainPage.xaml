@@ -8,6 +8,7 @@
         <Button Text="Sklepy" x:Name="Create" Clicked="Shops_Clicked"/>
         <Button Text="Produkty" x:Name="Products" Clicked="Products_Clicked"/>
         <Button Text="Przypisanie produktów" x:Name="ProductContainers" Clicked="ProductContainers_Clicked"/>
+        <Button Text="Wyszukiwanie produktów" x:Name="ProductSearch" Clicked="ProductSearch_Clicked"/>
     </StackLayout>
 
 </ContentPage>

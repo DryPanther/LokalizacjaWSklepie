@@ -7,8 +7,14 @@
     <StackLayout>
         <Button Text="Powrót" x:Name="Back" Clicked="Back_Clicked"/>
         <Button Text="Zapisz" Clicked="SaveChangesButton_Clicked" />
-        <Label Text="Products In Container" FontSize="Large" HorizontalOptions="Center"/>
-        <CollectionView x:Name="ProductsInContainerCollectionView" ItemsSource="{Binding ProductsInContainer}" SelectionMode="Single" SelectionChanged="ProductsInContainerCollectionView_SelectionChanged">
+        
+                <Label Text="Produkty w pojemniku" FontSize="Large" HorizontalOptions="Center"/>
+        <SearchBar x:Name="ProductsInContainerSearchBar"
+                   Placeholder="Wyszukaj produkty w pojemniku"
+                   TextChanged="ProductsInContainerSearchBar_TextChanged"/>
+        <ScrollView VerticalScrollBarVisibility="Always" HeightRequest="300">
+            <StackLayout>
+                <CollectionView x:Name="ProductsInContainerCollectionView" ItemsSource="{Binding ProductsInContainer}" SelectionMode="Single" SelectionChanged="ProductsInContainerCollectionView_SelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -22,9 +28,17 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+            </StackLayout>
+        </ScrollView>
+        
 
-        <Label Text="All Products" FontSize="Large" HorizontalOptions="Center"/>
-        <CollectionView x:Name="AllProductsCollectionView" ItemsSource="{Binding AllProducts}" SelectionMode="Single" SelectionChanged="AllProductsCollectionView_SelectionChanged">
+                <Label Text="Wszystkie produkty" FontSize="Large" HorizontalOptions="Center"/>
+        <SearchBar x:Name="AllProductsSearchBar"
+                   Placeholder="Wyszukaj wszystkie produkty"
+                   TextChanged="AllProductsSearchBar_TextChanged"/>
+        <ScrollView VerticalScrollBarVisibility="Always" HeightRequest="300">
+            <StackLayout>
+                <CollectionView x:Name="AllProductsCollectionView" ItemsSource="{Binding AllProducts}" SelectionMode="Single" SelectionChanged="AllProductsCollectionView_SelectionChanged">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -38,6 +52,8 @@
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
+            </StackLayout>
+        </ScrollView>
     </StackLayout>
 
 </ContentPage>

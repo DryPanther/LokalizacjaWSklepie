@@ -54,11 +54,11 @@ public partial class MapEditorPage : ContentPage
         }
     }
 
-    private BoxView CreateShopBox(double width, double length)
+    private BoxViewExtensions CreateShopBox(double width, double length)
     {
-        var shopBox = new BoxView
+        var shopBox = new BoxViewExtensions
         {
-            Color = Colors.LightGray,
+            BackgroundColor = Colors.LightGray,
             WidthRequest = width * skala,
             HeightRequest = length * skala
         };
@@ -70,13 +70,13 @@ public partial class MapEditorPage : ContentPage
         return shopBox;
     }
 
-    private BoxView CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
+    private Frame CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
         var containerBox = new BoxViewExtensions
         {
             WidthRequest = width * skala,
             HeightRequest = length * skala,
-            CornerRadius = new CornerRadius(10),
+            CornerRadius = 10
 
         };
 
@@ -87,16 +87,16 @@ public partial class MapEditorPage : ContentPage
         switch (containerBox.ClassId)
         {
             case "Pó³ka":
-                containerBox.Color = Colors.BurlyWood; break;
+                containerBox.BackgroundColor = Colors.BurlyWood; break;
 
             case "Lodówka":
-                containerBox.Color = Colors.SkyBlue; break;
+                containerBox.BackgroundColor = Colors.SkyBlue; break;
             case "Zamra¿arka":
-                containerBox.Color = Colors.DeepSkyBlue; break;
+                containerBox.BackgroundColor = Colors.DeepSkyBlue; break;
             case "Stojak":
-                containerBox.Color = Colors.SaddleBrown; break;
+                containerBox.BackgroundColor = Colors.SaddleBrown; break;
             case "Kasa":
-                containerBox.Color = Colors.Gold; break;
+                containerBox.BackgroundColor = Colors.Gold; break;
             default:
                 break;
         }
@@ -202,7 +202,7 @@ public partial class MapEditorPage : ContentPage
         }
     }
 
-    private async Task AddContainerToDatabase(BoxView container)
+    private async Task AddContainerToDatabase(BoxViewExtensions container)
     {
         using (HttpClient client = new HttpClient())
         {
@@ -236,7 +236,7 @@ public partial class MapEditorPage : ContentPage
     }
     private async void ShelfTapped(object sender, EventArgs e)
     {
-        if (sender is BoxView selectedShelf)
+        if (sender is BoxViewExtensions selectedShelf)
         {
             if (!trybUsuwanie)
             {
@@ -257,16 +257,16 @@ public partial class MapEditorPage : ContentPage
                             switch (selectedShelf.ClassId)
                             {
                                 case "Pó³ka":
-                                    selectedShelf.Color = Colors.BurlyWood; break;
+                                    selectedShelf.BackgroundColor = Colors.BurlyWood; break;
 
                                 case "Lodówka":
-                                    selectedShelf.Color = Colors.SkyBlue; break;
+                                    selectedShelf.BackgroundColor = Colors.SkyBlue; break;
                                 case "Zamra¿arka":
-                                    selectedShelf.Color = Colors.DeepSkyBlue; break;
+                                    selectedShelf.BackgroundColor = Colors.DeepSkyBlue; break;
                                 case "Stojak":
-                                    selectedShelf.Color = Colors.SaddleBrown; break;
+                                    selectedShelf.BackgroundColor = Colors.SaddleBrown; break;
                                 case "Kasa":
-                                    selectedShelf.Color = Colors.Gold; break;
+                                    selectedShelf.BackgroundColor = Colors.Gold; break;
                                 default:
                                     break;
                             }
@@ -288,7 +288,7 @@ public partial class MapEditorPage : ContentPage
             }
         }
     }
-    private async Task ChangeContainerType(BoxView selectedShelf)
+    private async Task ChangeContainerType(BoxViewExtensions selectedShelf)
     {
         List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
         string selectedType = await DisplayActionSheet("Wybierz typ pojemnika", "Anuluj", null, availableTypes.ToArray());
@@ -298,7 +298,7 @@ public partial class MapEditorPage : ContentPage
             UpdateContainerTypeInMemory(selectedShelf, selectedType);
         }
     }
-    private void UpdateContainerTypeInMemory(BoxView selectedShelf, string newType)
+    private void UpdateContainerTypeInMemory(BoxViewExtensions selectedShelf, string newType)
     {
         selectedShelf.ClassId = newType;
     }
@@ -306,7 +306,7 @@ public partial class MapEditorPage : ContentPage
     private double poprzedniaX, poprzedniaY;
     private void PrzesunProstokat(object sender, PanUpdatedEventArgs e)
     {
-        var prostokat = (BoxView)sender;
+        var prostokat = (BoxViewExtensions)sender;
 
         switch (e.StatusType)
         {
@@ -356,7 +356,7 @@ public partial class MapEditorPage : ContentPage
     {
         try
         {
-            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxView box && box.ClassId == "Sklep") as BoxView;
+            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxViewExtensions box && box.ClassId == "Sklep") as BoxViewExtensions;
 
             if (shopBox != null)
             {
@@ -406,7 +406,7 @@ public partial class MapEditorPage : ContentPage
         var ShopListPage = new ShopListPage("EditShops");
         await Navigation.PushAsync(ShopListPage);
     }
-    private int? GetShopIdFromMemory(BoxView shopBox)
+    private int? GetShopIdFromMemory(BoxViewExtensions shopBox)
     {
         return shopId;
     }
@@ -425,7 +425,7 @@ public partial class MapEditorPage : ContentPage
                 {
                     WidthRequest = szerokosc * skala, 
                     HeightRequest = wysokosc * skala, 
-                    CornerRadius = new CornerRadius(10)
+                    CornerRadius = 10
 
                 };
                 List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
@@ -434,16 +434,16 @@ public partial class MapEditorPage : ContentPage
                 switch (prostokat.ClassId)
                 {
                     case "Pó³ka":
-                        prostokat.Color = Colors.BurlyWood; break;
+                        prostokat.BackgroundColor = Colors.BurlyWood; break;
 
                     case "Lodówka":
-                        prostokat.Color = Colors.SkyBlue; break;
+                        prostokat.BackgroundColor = Colors.SkyBlue; break;
                     case "Zamra¿arka":
-                        prostokat.Color = Colors.DeepSkyBlue; break;
+                        prostokat.BackgroundColor = Colors.DeepSkyBlue; break;
                     case "Stojak":
-                        prostokat.Color = Colors.SaddleBrown; break;
+                        prostokat.BackgroundColor = Colors.SaddleBrown; break;
                     case "Kasa":
-                        prostokat.Color = Colors.Gold; break;
+                        prostokat.BackgroundColor = Colors.Gold; break;
                     default:
                         break;
                 }

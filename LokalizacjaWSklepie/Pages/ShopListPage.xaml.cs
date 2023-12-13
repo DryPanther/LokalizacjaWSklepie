@@ -22,6 +22,14 @@ namespace LokalizacjaWSklepie.Pages
             ShopsListView.ItemsSource = shops;
             LoadShops();
             chose = choice;
+            if (choice != "EditShops")
+            {
+                Create.IsVisible = false;
+            }
+            else
+            {
+                Create.IsVisible = true;
+            }
         }
 
         private async void LoadShops()
@@ -74,6 +82,12 @@ namespace LokalizacjaWSklepie.Pages
                         Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
 
                         await Navigation.PushAsync(new EditProductContainersPage(selectedShop.ShopId, selectedShop.Name));
+                    }
+                    if (chose == "Search")
+                    {
+                        Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
+
+                        await Navigation.PushAsync(new ProductSearchPage(selectedShop.ShopId, selectedShop.Name));
                     }
 
                 }

@@ -1,3 +1,4 @@
+using LokalizacjaWSklepie.Extensions;
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
@@ -17,7 +18,7 @@ namespace LokalizacjaWSklepie.Pages
             MapCreate();
         }
 
-        private async Task SaveContainerToDatabase(BoxView container, double width, double height, int shopId)
+        private async Task SaveContainerToDatabase(BoxViewExtensions container, double width, double height, int shopId)
         {
             var newContainer = new Container
             {
@@ -46,7 +47,7 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private async Task<int> SaveShopToDatabase(BoxView shopBox)
+        private async Task<int> SaveShopToDatabase(BoxViewExtensions shopBox)
         {
             try
             {
@@ -84,14 +85,12 @@ namespace LokalizacjaWSklepie.Pages
                         var responseData = await response.Content.ReadAsStringAsync();
                         var shop = JsonConvert.DeserializeObject<Shop>(responseData);
 
-                        // Teraz masz dostêp do shopId
                         var shopId = shop.ShopId;
 
                         return shopId;
                     }
                     else
                     {
-                        // Obs³uga b³êdu
                         await DisplayAlert("B³¹d", "Nie uda³o siê zapisaæ sklepu.", "OK");
                         return -1;
                     }
@@ -106,7 +105,7 @@ namespace LokalizacjaWSklepie.Pages
         }
         private async Task SaveMapToDatabase()
         {
-            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxView box && box.ClassId == "Sklep") as BoxView;
+            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxViewExtensions box && box.ClassId == "Sklep") as BoxViewExtensions;
 
             if (shopBox != null)
             {
@@ -114,7 +113,7 @@ namespace LokalizacjaWSklepie.Pages
 
                 foreach (var child in Layout.Children)
                 {
-                    if (child is BoxView container && container.ClassId != "Sklep")
+                    if (child is BoxViewExtensions container && container.ClassId != "Sklep")
                     {
                         await SaveContainerToDatabase(container, container.Width / skala, container.Height / skala, shopId);
                     }
@@ -130,7 +129,7 @@ namespace LokalizacjaWSklepie.Pages
         }
         private async void ShelfTapped(object sender, EventArgs e)
         {
-            if (sender is BoxView selectedShelf)
+            if (sender is BoxViewExtensions selectedShelf)
             {
                 if (!trybUsuwanie)
                 {
@@ -151,16 +150,16 @@ namespace LokalizacjaWSklepie.Pages
                                 switch (selectedShelf.ClassId)
                                 {
                                     case "Pó³ka":
-                                        selectedShelf.Color = Colors.BurlyWood; break;
+                                        selectedShelf.BackgroundColor = Colors.BurlyWood; break;
 
                                     case "Lodówka":
-                                        selectedShelf.Color = Colors.SkyBlue; break;
+                                        selectedShelf.BackgroundColor = Colors.SkyBlue; break;
                                     case "Zamra¿arka":
-                                        selectedShelf.Color = Colors.DeepSkyBlue; break;
+                                        selectedShelf.BackgroundColor = Colors.DeepSkyBlue; break;
                                     case "Stojak":
-                                        selectedShelf.Color = Colors.SaddleBrown; break;
+                                        selectedShelf.BackgroundColor = Colors.SaddleBrown; break;
                                     case "Kasa":
-                                        selectedShelf.Color = Colors.Gold; break;
+                                        selectedShelf.BackgroundColor = Colors.Gold; break;
                                     default:
                                         break;
                                 }
@@ -188,7 +187,7 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private async Task ChangeContainerType(BoxView selectedShelf)
+        private async Task ChangeContainerType(BoxViewExtensions selectedShelf)
         {
             List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
             string selectedType = await DisplayActionSheet("Wybierz typ pojemnika", "Anuluj", null, availableTypes.ToArray());
@@ -199,7 +198,7 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private void UpdateContainerTypeInMemory(BoxView selectedShelf, string newType)
+        private void UpdateContainerTypeInMemory(BoxViewExtensions selectedShelf, string newType)
         {
             selectedShelf.ClassId = newType; 
         }
@@ -219,9 +218,9 @@ namespace LokalizacjaWSklepie.Pages
 
                     if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                     {
-                        var Sklep = new BoxView
+                        var Sklep = new BoxViewExtensions
                         {
-                            Color = Colors.LightGray,
+                            BackgroundColor = Colors.LightGray,
                             WidthRequest = szerokosc * skala,
                             HeightRequest = wysokosc * skala 
                         };
@@ -254,7 +253,7 @@ namespace LokalizacjaWSklepie.Pages
 
         private void PrzesunProstokat(object sender, PanUpdatedEventArgs e)
         {
-            var prostokat = (BoxView)sender;
+            var prostokat = (BoxViewExtensions)sender;
 
             switch (e.StatusType)
             {
@@ -289,11 +288,11 @@ namespace LokalizacjaWSklepie.Pages
 
                 if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                 {
-                    var prostokat = new BoxView
+                    var prostokat = new BoxViewExtensions
                     {
                         WidthRequest = szerokosc * skala, 
                         HeightRequest = wysokosc * skala, 
-                        CornerRadius = new CornerRadius(10)
+                        CornerRadius = 10
 
                     };
                     List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
@@ -306,16 +305,16 @@ namespace LokalizacjaWSklepie.Pages
                     switch (prostokat.ClassId)
                     {
                         case "Pó³ka":
-                            prostokat.Color = Colors.BurlyWood; break;
+                            prostokat.BackgroundColor = Colors.BurlyWood; break;
 
                         case "Lodówka":
-                            prostokat.Color = Colors.SkyBlue; break;
+                            prostokat.BackgroundColor = Colors.SkyBlue; break;
                         case "Zamra¿arka":
-                            prostokat.Color = Colors.DeepSkyBlue; break;
+                            prostokat.BackgroundColor = Colors.DeepSkyBlue; break;
                         case "Stojak":
-                            prostokat.Color = Colors.SaddleBrown; break;
+                            prostokat.BackgroundColor = Colors.SaddleBrown; break;
                         case "Kasa":
-                            prostokat.Color = Colors.Gold; break;
+                            prostokat.BackgroundColor = Colors.Gold; break;
                         default:
                             break;
                     }

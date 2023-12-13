@@ -1,6 +1,6 @@
 ﻿namespace LokalizacjaWSklepie.Extensions
 {
-    public class BoxViewExtensions : BoxView
+    public class BoxViewExtensions : Frame
     {
         public static readonly BindableProperty IdProperty =
             BindableProperty.CreateAttached("Id", typeof(int), typeof(BoxViewExtensions), 0);

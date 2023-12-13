@@ -31,5 +31,11 @@ public partial class MainPage : ContentPage
         var ShopListPage = new ShopListPage("EditProductContaiiners");
         await Navigation.PushAsync(ShopListPage);
     }
+
+    private async void ProductSearch_Clicked(object sender, EventArgs e)
+    {
+        var ShopListPage = new ShopListPage("Search");
+        await Navigation.PushAsync(ShopListPage);
+    }
 }
 

@@ -26,8 +26,8 @@ namespace LokalizacjaWSklepie.Pages
             this.shopId = shopId;
             this.shopName = shopName;
             this.BindingContext = this;
-            ProductsInContainer = new List<Product>();  // Dodaj inicjalizacjê kolekcji
-            AllProducts = new List<Product>();         // Dodaj inicjalizacjê kolekcji
+            ProductsInContainer = new List<Product>();  
+            AllProducts = new List<Product>();         
             LoadProductsAsync();
         }
 
@@ -77,7 +77,7 @@ namespace LokalizacjaWSklepie.Pages
 
                 (sender as CollectionView).SelectedItem = null;
 
-                // Rêczne odœwie¿enie widoku
+                
                 ProductsInContainerCollectionView.ItemsSource = null;
                 ProductsInContainerCollectionView.ItemsSource = ProductsInContainer;
 
@@ -99,7 +99,7 @@ namespace LokalizacjaWSklepie.Pages
 
                 (sender as CollectionView).SelectedItem = null;
 
-                // Rêczne odœwie¿enie widoku
+                
                 ProductsInContainerCollectionView.ItemsSource = null;
                 ProductsInContainerCollectionView.ItemsSource = ProductsInContainer;
 
@@ -115,7 +115,7 @@ namespace LokalizacjaWSklepie.Pages
                 ProductsInContainer = await GetProductsInContainer(containerId);
                 AllProducts = await GetAllProducts();
 
-                // Usuñ z AllProducts elementy, które s¹ ju¿ w ProductsInContainer
+                
                 AllProducts = AllProducts.Where(product => !ProductsInContainer.Any(pc => pc.ProductId == product.ProductId)).ToList();
 
                 ProductsInContainerCollectionView.ItemsSource = ProductsInContainer;
@@ -166,13 +166,13 @@ namespace LokalizacjaWSklepie.Pages
         {
             try
             {
-                // Usuñ wszystkie productContainer dla danego containerId
+               
                 await RemoveAllProductsFromContainer();
 
-                // Dodaj nowe productContainer dla produktów z listy ProductsInContainer
+                
                 await AddProductsToContainer(ProductsInContainer);
 
-                // Prze³aduj dane
+               
                 await LoadProductsAsync();
                 await Navigation.PushAsync(new EditProductContainersPage(shopId, shopName));
             }
@@ -201,6 +201,33 @@ namespace LokalizacjaWSklepie.Pages
         private async void Back_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new EditProductContainersPage(shopId, shopName));
+        }
+        private void ProductsInContainerSearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterProductsInContainer(e.NewTextValue);
+        }
+
+        private void AllProductsSearchBar_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            FilterAllProducts(e.NewTextValue);
+        }
+
+        private void FilterProductsInContainer(string searchText)
+        {
+            var filteredProducts = ProductsInContainer
+                .Where(product => product.Name.ToLower().Contains(searchText.ToLower()) || product.Barcode.ToLower().Contains(searchText.ToLower()))
+                .ToList();
+
+            ProductsInContainerCollectionView.ItemsSource = filteredProducts;
+        }
+
+        private void FilterAllProducts(string searchText)
+        {
+            var filteredProducts = AllProducts
+                .Where(product => product.Name.ToLower().Contains(searchText.ToLower()) || product.Barcode.ToLower().Contains(searchText.ToLower()))
+                .ToList();
+
+            AllProductsCollectionView.ItemsSource = filteredProducts;
         }
 
     }
