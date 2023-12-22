@@ -1,12 +1,8 @@
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace LokalizacjaWSklepie.Pages
 {
@@ -26,8 +22,8 @@ namespace LokalizacjaWSklepie.Pages
             this.shopId = shopId;
             this.shopName = shopName;
             this.BindingContext = this;
-            ProductsInContainer = new List<Product>();  
-            AllProducts = new List<Product>();         
+            ProductsInContainer = new List<Product>();
+            AllProducts = new List<Product>();
             LoadProductsAsync();
         }
 
@@ -77,7 +73,7 @@ namespace LokalizacjaWSklepie.Pages
 
                 (sender as CollectionView).SelectedItem = null;
 
-                
+
                 ProductsInContainerCollectionView.ItemsSource = null;
                 ProductsInContainerCollectionView.ItemsSource = ProductsInContainer;
 
@@ -97,9 +93,48 @@ namespace LokalizacjaWSklepie.Pages
                 OnPropertyChanged(nameof(ProductsInContainer));
                 OnPropertyChanged(nameof(AllProducts));
 
+
+                /* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-ios)”
+                Przed:
+                                (sender as CollectionView).SelectedItem = null;
+
+
+                                ProductsInContainerCollectionView.ItemsSource = null;
+                Po:
+                                (sender as CollectionView).SelectedItem = null;
+
+
+                                ProductsInContainerCollectionView.ItemsSource = null;
+                */
+
+                /* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-windows10.0.19041.0)”
+                Przed:
+                                (sender as CollectionView).SelectedItem = null;
+
+
+                                ProductsInContainerCollectionView.ItemsSource = null;
+                Po:
+                                (sender as CollectionView).SelectedItem = null;
+
+
+                                ProductsInContainerCollectionView.ItemsSource = null;
+                */
+
+                /* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-maccatalyst)”
+                Przed:
+                                (sender as CollectionView).SelectedItem = null;
+
+
+                                ProductsInContainerCollectionView.ItemsSource = null;
+                Po:
+                                (sender as CollectionView).SelectedItem = null;
+
+
+                                ProductsInContainerCollectionView.ItemsSource = null;
+                */
                 (sender as CollectionView).SelectedItem = null;
 
-                
+
                 ProductsInContainerCollectionView.ItemsSource = null;
                 ProductsInContainerCollectionView.ItemsSource = ProductsInContainer;
 
@@ -115,7 +150,7 @@ namespace LokalizacjaWSklepie.Pages
                 ProductsInContainer = await GetProductsInContainer(containerId);
                 AllProducts = await GetAllProducts();
 
-                
+
                 AllProducts = AllProducts.Where(product => !ProductsInContainer.Any(pc => pc.ProductId == product.ProductId)).ToList();
 
                 ProductsInContainerCollectionView.ItemsSource = ProductsInContainer;
@@ -166,13 +201,13 @@ namespace LokalizacjaWSklepie.Pages
         {
             try
             {
-               
+
                 await RemoveAllProductsFromContainer();
 
-                
+
                 await AddProductsToContainer(ProductsInContainer);
 
-               
+
                 await LoadProductsAsync();
                 await Navigation.PushAsync(new EditProductContainersPage(shopId, shopName));
             }

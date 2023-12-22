@@ -1,11 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Net.Http;
-using System.Threading.Tasks;
+
+
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
+
+using System.Collections.ObjectModel;
 
 namespace LokalizacjaWSklepie.Pages
 {
@@ -106,8 +105,8 @@ namespace LokalizacjaWSklepie.Pages
 
         private async void Back_Clicked(object sender, EventArgs e)
         {
-            var MainPage = new MainPage();
-            await Navigation.PushAsync(MainPage);
+            var AdminMenuPage = new AdminMenuPage();
+            await Navigation.PushAsync(AdminMenuPage);
         }
 
         private async void OnShopSearchButtonPressed(object sender, EventArgs e)

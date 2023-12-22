@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LokalizacjaWSklepie.Models;
+﻿namespace LokalizacjaWSklepie.Models;
 
 public partial class User
 {
@@ -12,4 +9,8 @@ public partial class User
     public string Password { get; set; }
 
     public string Role { get; set; }
+
+    public string Email { get; set; }
+
+    public virtual ICollection<ShoppingList> ShoppingLists { get; set; } = new List<ShoppingList>();
 }

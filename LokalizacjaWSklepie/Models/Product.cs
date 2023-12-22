@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LokalizacjaWSklepie.Models;
+﻿namespace LokalizacjaWSklepie.Models;
 
 public partial class Product
 {
@@ -15,7 +12,9 @@ public partial class Product
 
     public string QuantityType { get; set; }
 
-    public virtual ICollection<ProductContainer> ProductContainers { get; set; } = new List<ProductContainer>();
-
     public virtual ICollection<ProductQuantity> ProductQuantities { get; set; } = new List<ProductQuantity>();
+
+    public virtual ICollection<ShoppingListProduct> ShoppingListProducts { get; set; } = new List<ShoppingListProduct>();
+
+    public virtual ICollection<Container> Containers { get; set; } = new List<Container>();
 }

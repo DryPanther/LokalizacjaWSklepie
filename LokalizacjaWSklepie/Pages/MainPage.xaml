@@ -5,10 +5,12 @@
              Title="Home">
 
     <StackLayout>
-        <Button Text="Sklepy" x:Name="Create" Clicked="Shops_Clicked"/>
-        <Button Text="Produkty" x:Name="Products" Clicked="Products_Clicked"/>
-        <Button Text="Przypisanie produktów" x:Name="ProductContainers" Clicked="ProductContainers_Clicked"/>
-        <Button Text="Wyszukiwanie produktów" x:Name="ProductSearch" Clicked="ProductSearch_Clicked"/>
+        <Label Text="Email"/>
+        <Entry x:Name="Email"/>
+        <Label Text="Hasło"/>
+        <Entry x:Name="Password" IsPassword="True"/>
+        <Button x:Name="Login" Clicked="Login_Clicked" Text="Zaloguj"/>
+        <Button x:Name="Register" Clicked="Register_Clicked" Text="Zarejestruj"/>
     </StackLayout>
 
 </ContentPage>

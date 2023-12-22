@@ -423,8 +423,8 @@ public partial class MapEditorPage : ContentPage
 
                 var prostokat = new BoxViewExtensions
                 {
-                    WidthRequest = szerokosc * skala, 
-                    HeightRequest = wysokosc * skala, 
+                    WidthRequest = szerokosc * skala,
+                    HeightRequest = wysokosc * skala,
                     CornerRadius = 10
 
                 };
@@ -456,7 +456,7 @@ public partial class MapEditorPage : ContentPage
                 prostokat.GestureRecognizers.Add(tapGesture);
 
                 Layout.SetRow(prostokat, 1);
-                Layout.Children.Add(prostokat); 
+                Layout.Children.Add(prostokat);
             }
             else
             {

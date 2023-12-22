@@ -1,8 +1,9 @@
-using System;
-using System.Text;
+
+
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace LokalizacjaWSklepie.Pages
 {
@@ -32,7 +33,8 @@ namespace LokalizacjaWSklepie.Pages
                     if (response.IsSuccessStatusCode)
                     {
                         await DisplayAlert("Success", "Produkt zaktualizowany pomyœlnie", "OK");
-                        await Navigation.PopAsync(); 
+                        var ProductsPage = new ProductsPage();
+                        await Navigation.PushAsync(ProductsPage);
                     }
                     else
                     {
@@ -60,7 +62,8 @@ namespace LokalizacjaWSklepie.Pages
                         if (response.IsSuccessStatusCode)
                         {
                             await DisplayAlert("Success", "Produkt usuniêty pomyœlnie", "OK");
-                            await Navigation.PopAsync();
+                            var ProductsPage = new ProductsPage();
+                            await Navigation.PushAsync(ProductsPage);
                         }
                         else
                         {
@@ -74,9 +77,10 @@ namespace LokalizacjaWSklepie.Pages
                 }
             }
         }
-        private void CancelButton_Clicked(object sender, EventArgs e)
+        private async void CancelButton_Clicked(object sender, EventArgs e)
         {
-            Navigation.PopAsync();
+            var ProductsPage = new ProductsPage();
+            await Navigation.PushAsync(ProductsPage);
         }
     }
 }

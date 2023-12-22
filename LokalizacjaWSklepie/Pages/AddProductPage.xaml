@@ -18,7 +18,7 @@
             </Picker.ItemsSource>
         </Picker>
 
-        <Button Text="Add Product" Clicked="OnAddProductClicked" />
+        <Button Text="Dodaj Product" Clicked="OnAddProductClicked" />
         <Button Text="Anuluj" x:Name="Back" Clicked="Back_Clicked"/>
     </StackLayout>
 </ContentPage>

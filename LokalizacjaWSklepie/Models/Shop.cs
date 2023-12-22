@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace LokalizacjaWSklepie.Models;
+﻿namespace LokalizacjaWSklepie.Models;
 
 public partial class Shop
 {

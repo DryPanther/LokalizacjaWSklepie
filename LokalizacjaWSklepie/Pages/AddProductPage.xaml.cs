@@ -1,10 +1,31 @@
-using System;
 using LokalizacjaWSklepie.Models;
+using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
-using System.Net.Http;
 using System.Text;
+/* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-ios)”
+Przed:
 using System.Threading.Tasks;
 using LokalizacjaWSklepie.Properties;
+Po:
+using System.Threading.Tasks;
+*/
+
+/* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-windows10.0.19041.0)”
+Przed:
+using System.Threading.Tasks;
+using LokalizacjaWSklepie.Properties;
+Po:
+using System.Threading.Tasks;
+*/
+
+/* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-maccatalyst)”
+Przed:
+using System.Threading.Tasks;
+using LokalizacjaWSklepie.Properties;
+Po:
+using System.Threading.Tasks;
+*/
+
 
 namespace LokalizacjaWSklepie.Pages
 {

@@ -1,11 +1,7 @@
 using LokalizacjaWSklepie.Extensions;
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Maui.Controls;
 using Newtonsoft.Json;
-using System.ComponentModel;
-using System.Net;
 using Container = LokalizacjaWSklepie.Models.Container;
 
 namespace LokalizacjaWSklepie.Pages;
@@ -17,8 +13,8 @@ public partial class ProductSearchPage : ContentPage
     private int shopId;
     private string name;
     private List<Container> currentContainers;
-    private List<Product> allProducts; 
-    private List<Product> searchResults; 
+    private List<Product> allProducts;
+    private List<Product> searchResults;
     private bool isSearchBarFocused = false;
 
     public ProductSearchPage(int shopId, string name)
@@ -32,55 +28,55 @@ public partial class ProductSearchPage : ContentPage
         LoadMap();
     }
     private async void LoadProducts()
+    {
+        try
         {
-            try
+            using (HttpClient client = new HttpClient())
             {
-                using (HttpClient client = new HttpClient())
+                var response = await client.GetAsync($"{apiBaseUrl}/api/Products/GetAllProducts");
+
+                if (response.IsSuccessStatusCode)
                 {
-                    var response = await client.GetAsync($"{apiBaseUrl}/api/Products/GetAllProducts");
+                    var responseData = await response.Content.ReadAsStringAsync();
+                    allProducts = JsonConvert.DeserializeObject<List<Product>>(responseData);
 
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var responseData = await response.Content.ReadAsStringAsync();
-                        allProducts = JsonConvert.DeserializeObject<List<Product>>(responseData);
-
-                        searchResults = allProducts;
-                        productsListView.ItemsSource = searchResults;
-                    }
-                    else
-                    {
-                        await DisplayAlert("Error", "Failed to retrieve products", "OK");
-                    }
+                    searchResults = allProducts;
+                    productsListView.ItemsSource = searchResults;
+                }
+                else
+                {
+                    await DisplayAlert("Error", "Failed to retrieve products", "OK");
                 }
             }
-            catch (Exception ex)
-            {
-                await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
-            }
         }
-
-        private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+        catch (Exception ex)
         {
-            string searchText = e.NewTextValue;
-
-            
-            if (!string.IsNullOrWhiteSpace(searchText))
-            {
-                SearchProducts(searchText);
-                productsListView.IsVisible = true; 
-                
-            }
-            else
-            {
-                productsListView.IsVisible = false; 
-            }
+            await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
         }
+    }
 
-        private void SearchProducts(string searchText)
+    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    {
+        string searchText = e.NewTextValue;
+
+
+        if (!string.IsNullOrWhiteSpace(searchText))
         {
-            if (allProducts == null)
-                return;
-        if (searchText == "") 
+            SearchProducts(searchText);
+            productsListView.IsVisible = true;
+
+        }
+        else
+        {
+            productsListView.IsVisible = false;
+        }
+    }
+
+    private void SearchProducts(string searchText)
+    {
+        if (allProducts == null)
+            return;
+        if (searchText == "")
         {
             searchResults = allProducts;
             return;
@@ -90,10 +86,10 @@ public partial class ProductSearchPage : ContentPage
             searchResults = allProducts
                 .FindAll(p => p.Name.ToLower().Contains(searchText.ToLower()) || p.Barcode.ToLower().Contains(searchText.ToLower()));
         }
-            
 
-            productsListView.ItemsSource = searchResults;
-        }
+
+        productsListView.ItemsSource = searchResults;
+    }
 
     private async void OnProductSelected(object sender, SelectedItemChangedEventArgs e)
     {
@@ -140,8 +136,8 @@ public partial class ProductSearchPage : ContentPage
                         }
                     }
                 }
-                
-                    }
+
+            }
             catch (Exception ex)
             {
                 await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
@@ -228,7 +224,7 @@ public partial class ProductSearchPage : ContentPage
 
     private Frame CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
-        
+
         var containerBox = new BoxViewExtensions
         {
             WidthRequest = width * skala,
@@ -236,7 +232,7 @@ public partial class ProductSearchPage : ContentPage
             CornerRadius = 10,
             BorderColor = Colors.Black,
         };
-        
+
 
         containerBox.TranslationX = coordinateX;
         containerBox.TranslationY = coordinateY;
@@ -301,12 +297,17 @@ public partial class ProductSearchPage : ContentPage
     }
     private async void ShelfTapped(object sender, EventArgs e)
     {
+        if (sender is BoxViewExtensions selectedShelf)
+        {
+            int containerId = BoxViewExtensions.GetId(selectedShelf);
+            await Navigation.PushAsync(new ProductsInContainerListPage(containerId, shopId, name));
+        }
     }
-    
+
     private async void Back_Clicked(object sender, EventArgs e)
     {
         var ShopListPage = new ShopListPage("Search");
         await Navigation.PushAsync(ShopListPage);
     }
-    
+
 }

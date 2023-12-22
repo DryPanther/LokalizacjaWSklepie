@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LokalizacjaWSklepie.Pages.AdminMenuPage"
+             Title="AdminMenuPage">
+    <StackLayout>
+        <Button Text="Sklepy" x:Name="Create" Clicked="Shops_Clicked"/>
+        <Button Text="Produkty" x:Name="Products" Clicked="Products_Clicked"/>
+        <Button Text="Użytkownicy" x:Name="Users" Clicked="Users_Clicked"/>
+        <Button Text="Przypisanie produktów" x:Name="ProductContainers" Clicked="ProductContainers_Clicked"/>
+        <Button Text="Wyszukiwanie produktów" x:Name="ProductSearch" Clicked="ProductSearch_Clicked"/>
+        <Button Text="Wyloguj" x:Name="Logout" Clicked="Logout_Clicked"/>
+    </StackLayout>
+</ContentPage>

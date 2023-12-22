@@ -1,41 +1,73 @@
-﻿using LokalizacjaWSklepie.Pages;
+﻿using LokalizacjaWSklepie.Models;
+using LokalizacjaWSklepie.Pages;
+using LokalizacjaWSklepie.Properties;
+using Newtonsoft.Json;
 
 namespace LokalizacjaWSklepie;
 
 public partial class MainPage : ContentPage
 {
-
-
+    private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
+    string email;
     public MainPage()
     {
+        
         InitializeComponent();
     }
 
-
-
-    private async void Shops_Clicked(object sender, EventArgs e)
+        private async void Login_Clicked(object sender, EventArgs e)
     {
-        var ShopListPage = new ShopListPage("EditShops");
-        await Navigation.PushAsync(ShopListPage);
+        email = Email.Text;
+        var user = await GetUser();
+        if (user == null)
+        {
+            await DisplayAlert("Błąd", "Błąd podczas łączenia z bazą", "OK");
+        }
+        else
+        {
+            if (user.Password == Password.Text)
+            {
+                if (user.Role == "Admin")
+                {
+                    Memory.Instance.user = user;
+                    Password.Text = null;
+                    var AdminMenuPage = new AdminMenuPage();
+                    await Navigation.PushAsync(AdminMenuPage);
+                }
+                else if (user.Role == "Client")
+                {
+
+                }
+                else
+                {
+                    throw new Exception("Błąd podczas sprawdzania roli użytkownika");
+                }
+            }
+        }
+
     }
 
-
-    private async void Products_Clicked(object sender, EventArgs e)
+    private async void Register_Clicked(object sender, EventArgs e)
     {
-        var ProductsPage = new ProductsPage();
-        await Navigation.PushAsync(ProductsPage);
+        var UserRegistrationPage = new UserRegistrationPage();
+        await Navigation.PushAsync(UserRegistrationPage);
     }
-
-    private async void ProductContainers_Clicked(object sender, EventArgs e)
+    private async Task<User> GetUser()
     {
-        var ShopListPage = new ShopListPage("EditProductContaiiners");
-        await Navigation.PushAsync(ShopListPage);
-    }
+        using (HttpClient client = new HttpClient())
+        {
+            var response = await client.GetAsync($"{apiBaseUrl}/api/Users/GetUserByEmail/{email}");
 
-    private async void ProductSearch_Clicked(object sender, EventArgs e)
-    {
-        var ShopListPage = new ShopListPage("Search");
-        await Navigation.PushAsync(ShopListPage);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseData = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<User>(responseData);
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
 

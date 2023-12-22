@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
+
 using Microsoft.EntityFrameworkCore;
 
 namespace LokalizacjaWSklepie.Models;
@@ -19,11 +19,13 @@ public partial class LokalizacjaWsklepieContext : DbContext
 
     public virtual DbSet<Product> Products { get; set; }
 
-    public virtual DbSet<ProductContainer> ProductContainers { get; set; }
-
     public virtual DbSet<ProductQuantity> ProductQuantities { get; set; }
 
     public virtual DbSet<Shop> Shops { get; set; }
+
+    public virtual DbSet<ShoppingList> ShoppingLists { get; set; }
+
+    public virtual DbSet<ShoppingListProduct> ShoppingListProducts { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
 
@@ -58,21 +60,6 @@ public partial class LokalizacjaWsklepieContext : DbContext
                 .IsRequired()
                 .HasMaxLength(10)
                 .IsFixedLength();
-        });
-
-        modelBuilder.Entity<ProductContainer>(entity =>
-        {
-            entity.HasKey(e => new { e.ContainerId, e.ProductId });
-
-            entity.HasOne(d => d.Container).WithMany(p => p.ProductContainers)
-                .HasForeignKey(d => d.ContainerId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductContainers_Containers");
-
-            entity.HasOne(d => d.Product).WithMany(p => p.ProductContainers)
-                .HasForeignKey(d => d.ProductId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_ProductContainers_Products");
         });
 
         modelBuilder.Entity<ProductQuantity>(entity =>
@@ -110,8 +97,42 @@ public partial class LokalizacjaWsklepieContext : DbContext
                 .IsUnicode(false);
         });
 
+        modelBuilder.Entity<ShoppingList>(entity =>
+        {
+            entity.Property(e => e.ListName)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+
+            entity.HasOne(d => d.User).WithMany(p => p.ShoppingLists)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ShoppingLists_Users");
+        });
+
+        modelBuilder.Entity<ShoppingListProduct>(entity =>
+        {
+            entity.HasKey(e => new { e.ShoppingListId, e.ProductId });
+
+            entity.HasOne(d => d.Product).WithMany(p => p.ShoppingListProducts)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ShoppingListProducts_Products");
+
+            entity.HasOne(d => d.ShoppingList).WithMany(p => p.ShoppingListProducts)
+                .HasForeignKey(d => d.ShoppingListId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ShoppingListProducts_ShoppingListProducts");
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
+            entity.HasIndex(e => e.Username, "IX_Users").IsUnique();
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
             entity.Property(e => e.Password)
                 .IsRequired()
                 .HasMaxLength(50)

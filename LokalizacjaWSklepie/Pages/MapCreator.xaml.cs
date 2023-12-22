@@ -119,8 +119,8 @@ namespace LokalizacjaWSklepie.Pages
                     }
                 }
 
-                Page targetPage = new MainPage();
-                await Navigation.PushAsync(targetPage);
+                Page AdminMenuPage = new AdminMenuPage();
+                await Navigation.PushAsync(AdminMenuPage);
             }
             else
             {
@@ -200,7 +200,7 @@ namespace LokalizacjaWSklepie.Pages
 
         private void UpdateContainerTypeInMemory(BoxViewExtensions selectedShelf, string newType)
         {
-            selectedShelf.ClassId = newType; 
+            selectedShelf.ClassId = newType;
         }
 
         private async void MapCreate()
@@ -222,7 +222,7 @@ namespace LokalizacjaWSklepie.Pages
                         {
                             BackgroundColor = Colors.LightGray,
                             WidthRequest = szerokosc * skala,
-                            HeightRequest = wysokosc * skala 
+                            HeightRequest = wysokosc * skala
                         };
                         Sklep.ClassId = "Sklep";
                         var tapGesture = new TapGestureRecognizer();
@@ -230,7 +230,7 @@ namespace LokalizacjaWSklepie.Pages
                         Sklep.GestureRecognizers.Add(tapGesture);
 
                         Layout.SetRow(Sklep, 1);
-                        Layout.Children.Add(Sklep); 
+                        Layout.Children.Add(Sklep);
                     }
                     else
                     {
@@ -244,7 +244,7 @@ namespace LokalizacjaWSklepie.Pages
                     MapCreate();
                 }
             }
-           
+
         }
 
 
@@ -290,8 +290,8 @@ namespace LokalizacjaWSklepie.Pages
                 {
                     var prostokat = new BoxViewExtensions
                     {
-                        WidthRequest = szerokosc * skala, 
-                        HeightRequest = wysokosc * skala, 
+                        WidthRequest = szerokosc * skala,
+                        HeightRequest = wysokosc * skala,
                         CornerRadius = 10
 
                     };
@@ -327,7 +327,7 @@ namespace LokalizacjaWSklepie.Pages
                     prostokat.GestureRecognizers.Add(tapGesture);
 
                     Layout.SetRow(prostokat, 1);
-                    Layout.Children.Add(prostokat); 
+                    Layout.Children.Add(prostokat);
                 }
                 else
                 {
