@@ -50,4 +50,10 @@ public partial class AdminMenuPage : ContentPage
         var UserListPage = new UserListPage();
         await Navigation.PushAsync(UserListPage);
     }
+
+    private async void ShoppingLists_Clicked(object sender, EventArgs e)
+    {
+        var ShoppingListListPage = new ShoppingListListPage();
+        await Navigation.PushAsync(ShoppingListListPage);
+    }
 }

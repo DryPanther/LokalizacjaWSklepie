@@ -18,10 +18,13 @@ namespace LokalizacjaWSklepie.Pages
         public ProductsInContainerPage(int containerId, int shopId, string shopName)
         {
             InitializeComponent();
+            double screenHeight = DeviceDisplay.MainDisplayInfo.Height;
+            double gridHeightPercentage = 0.12;
+            Scroll1.HeightRequest = screenHeight * gridHeightPercentage;
+            Scroll2.HeightRequest = screenHeight * gridHeightPercentage;
             this.containerId = containerId;
             this.shopId = shopId;
             this.shopName = shopName;
-            this.BindingContext = this;
             ProductsInContainer = new List<Product>();
             AllProducts = new List<Product>();
             LoadProductsAsync();
@@ -92,46 +95,6 @@ namespace LokalizacjaWSklepie.Pages
                 ProductsInContainer.Add(selectedProduct);
                 OnPropertyChanged(nameof(ProductsInContainer));
                 OnPropertyChanged(nameof(AllProducts));
-
-
-                /* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-ios)”
-                Przed:
-                                (sender as CollectionView).SelectedItem = null;
-
-
-                                ProductsInContainerCollectionView.ItemsSource = null;
-                Po:
-                                (sender as CollectionView).SelectedItem = null;
-
-
-                                ProductsInContainerCollectionView.ItemsSource = null;
-                */
-
-                /* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-windows10.0.19041.0)”
-                Przed:
-                                (sender as CollectionView).SelectedItem = null;
-
-
-                                ProductsInContainerCollectionView.ItemsSource = null;
-                Po:
-                                (sender as CollectionView).SelectedItem = null;
-
-
-                                ProductsInContainerCollectionView.ItemsSource = null;
-                */
-
-                /* Niescalona zmiana z projektu „LokalizacjaWSklepie (net7.0-maccatalyst)”
-                Przed:
-                                (sender as CollectionView).SelectedItem = null;
-
-
-                                ProductsInContainerCollectionView.ItemsSource = null;
-                Po:
-                                (sender as CollectionView).SelectedItem = null;
-
-
-                                ProductsInContainerCollectionView.ItemsSource = null;
-                */
                 (sender as CollectionView).SelectedItem = null;
 
 

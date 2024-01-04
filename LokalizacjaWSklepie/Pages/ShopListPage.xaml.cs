@@ -105,8 +105,17 @@ namespace LokalizacjaWSklepie.Pages
 
         private async void Back_Clicked(object sender, EventArgs e)
         {
-            var AdminMenuPage = new AdminMenuPage();
-            await Navigation.PushAsync(AdminMenuPage);
+            if (Memory.Instance.user.Role == "Admin")
+            {
+                var AdminMenuPage = new AdminMenuPage();
+                await Navigation.PushAsync(AdminMenuPage);
+            }
+            else if (Memory.Instance.user.Role == "Client")
+            {
+                var ClientMenuPage = new ClientMenuPage();
+                await Navigation.PushAsync(ClientMenuPage);
+            }
+            
         }
 
         private async void OnShopSearchButtonPressed(object sender, EventArgs e)

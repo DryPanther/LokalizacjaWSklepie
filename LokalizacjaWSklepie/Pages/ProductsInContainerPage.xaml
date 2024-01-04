@@ -12,7 +12,7 @@
         <SearchBar x:Name="ProductsInContainerSearchBar"
                    Placeholder="Wyszukaj produkty w pojemniku"
                    TextChanged="ProductsInContainerSearchBar_TextChanged"/>
-        <ScrollView VerticalScrollBarVisibility="Always" HeightRequest="300">
+        <ScrollView x:Name="Scroll1" VerticalScrollBarVisibility="Always">
             <StackLayout>
                 <CollectionView x:Name="ProductsInContainerCollectionView" ItemsSource="{Binding ProductsInContainer}" SelectionMode="Single" SelectionChanged="ProductsInContainerCollectionView_SelectionChanged">
             <CollectionView.ItemTemplate>
@@ -36,7 +36,7 @@
         <SearchBar x:Name="AllProductsSearchBar"
                    Placeholder="Wyszukaj wszystkie produkty"
                    TextChanged="AllProductsSearchBar_TextChanged"/>
-        <ScrollView VerticalScrollBarVisibility="Always" HeightRequest="300">
+        <ScrollView x:Name="Scroll2" VerticalScrollBarVisibility="Always">
             <StackLayout>
                 <CollectionView x:Name="AllProductsCollectionView" ItemsSource="{Binding AllProducts}" SelectionMode="Single" SelectionChanged="AllProductsCollectionView_SelectionChanged">
             <CollectionView.ItemTemplate>

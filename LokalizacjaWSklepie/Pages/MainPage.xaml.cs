@@ -36,11 +36,14 @@ public partial class MainPage : ContentPage
                 }
                 else if (user.Role == "Client")
                 {
-
+                    Memory.Instance.user = user;
+                    Password.Text = null;
+                    var ClientMenuPage = new ClientMenuPage();
+                    await Navigation.PushAsync(ClientMenuPage);
                 }
                 else
                 {
-                    throw new Exception("Błąd podczas sprawdzania roli użytkownika");
+                    await DisplayAlert("Błąd", "Błąd podczas uzyskiwania roli", "OK");
                 }
             }
         }
