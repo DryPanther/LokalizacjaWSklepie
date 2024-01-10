@@ -10,14 +10,11 @@ public partial class ProductsInContainerListPage : ContentPage
     private List<Product> productsInContainer;
     private List<Product> allProducts;
     private int containerId;
-    private int shopId;
-    private string shopName;
-    public ProductsInContainerListPage(int containerId, int shopId, string shopName)
+
+    public ProductsInContainerListPage(int containerId)
     {
         InitializeComponent();
         this.containerId = containerId;
-        this.shopId = shopId;
-        this.shopName = shopName;
         this.BindingContext = this;
         ProductsInContainer = new List<Product>();
         AllProducts = new List<Product>();
@@ -96,6 +93,6 @@ public partial class ProductsInContainerListPage : ContentPage
     }
     private async void Back_Clicked(object sender, EventArgs e)
     {
-        await Navigation.PushAsync(new ProductSearchPage(shopId, shopName));
+        await Navigation.PopAsync();
     }
 }

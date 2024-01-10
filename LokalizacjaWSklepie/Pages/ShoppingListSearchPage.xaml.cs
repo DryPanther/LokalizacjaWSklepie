@@ -2,159 +2,116 @@ using LokalizacjaWSklepie.Extensions;
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
-using Container = LokalizacjaWSklepie.Models.Container;
 
 namespace LokalizacjaWSklepie.Pages;
 
-public partial class ProductSearchPage : ContentPage
+public partial class ShoppingListSearchPage : ContentPage
 {
     private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
     private int skala = 100;
     private int shopId;
     private string name;
-    private List<Container> currentContainers;
-    private List<Product> allProducts;
-    private List<Product> searchResults;
-    private bool isSearchBarFocused = false;
+    private int shoppingListId;
 
-    public ProductSearchPage(int shopId, string name)
-    {
+    public ShoppingListSearchPage(int shopId, string name, int shoppingListId)
+	{
         Title = name;
         InitializeComponent();
-        LoadProducts();
-        productsListView.IsVisible = false;
         this.shopId = shopId;
         this.name = name;
-        LoadMap();
+        this.shoppingListId = shoppingListId;
+        Initialize();
     }
-    private async void LoadProducts()
+    private async void Initialize()
+    {
+        await LoadMap();
+        LoadShoppingList();
+    }
+    private async void ShowProductsButton_Clicked(object sender, EventArgs e)
+    {
+        productsListView.IsVisible = !productsListView.IsVisible;
+        await productsListFrame.TranslateTo(productsListFrame.IsVisible ? 0 : productsListFrame.Width, 0, 250, Easing.CubicInOut);
+    }
+    private async void LoadShoppingList()
     {
         try
         {
-            using (HttpClient client = new HttpClient())
+            List<Product> productsOnShoppingList = await GetProductsOnShoppingList(shoppingListId);
+            productsListView.ItemsSource = productsOnShoppingList;
+            foreach (var product in productsOnShoppingList)
             {
-                var response = await client.GetAsync($"{apiBaseUrl}/api/Products/GetAllProducts");
+                var containerIds = await GetDistinctContainerIds(product.ProductId, shopId);
 
-                if (response.IsSuccessStatusCode)
+                foreach (var containerId in containerIds)
                 {
-                    var responseData = await response.Content.ReadAsStringAsync();
-                    allProducts = JsonConvert.DeserializeObject<List<Product>>(responseData);
 
-                    searchResults = allProducts;
-                    productsListView.ItemsSource = searchResults;
-                }
-                else
-                {
-                    await DisplayAlert("Error", "Failed to retrieve products", "OK");
+                    foreach (var containerBox in Layout.Children.OfType<BoxViewExtensions>())
+                    {
+
+                        int containerBoxId = BoxViewExtensions.GetId(containerBox);
+                        
+                        if (containerBoxId == containerId)
+                        {
+                            List<Product> productsInContainer = BoxViewExtensions.GetProductList(containerBox);
+                            if (productsInContainer == null)
+                            {
+                                productsInContainer = new List<Product>();
+                            }
+                            productsInContainer.Add(product);
+                            BoxViewExtensions.SetProductList(containerBox, productsInContainer);
+                            int numberOfProductsInContainer = productsInContainer.Count;
+                            var label = new Label
+                            {
+                                Text = Convert.ToString(numberOfProductsInContainer),
+                                FontSize = 20,
+                                TextColor = Colors.White,
+                                HorizontalTextAlignment = TextAlignment.Center,
+                                VerticalTextAlignment = TextAlignment.Center,
+                                FontAttributes = FontAttributes.Bold,
+                            };
+                            containerBox.BorderColor = Colors.Red;
+                            containerBox.Content = label;
+                        }
+                    
+                    }
                 }
             }
+            
         }
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
         }
+
     }
-
-    private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
+    private async Task<List<Product>> GetProductsOnShoppingList(int shoppingListId)
     {
-        string searchText = e.NewTextValue;
-
-
-        if (!string.IsNullOrWhiteSpace(searchText))
+        using (HttpClient client = new HttpClient())
         {
-            SearchProducts(searchText);
-            productsListView.IsVisible = true;
+            var response = await client.GetAsync($"{apiBaseUrl}/api/ShoppingLists/GetProductsOnShoppingList/{shoppingListId}");
 
-        }
-        else
-        {
-            productsListView.IsVisible = false;
-        }
-    }
-
-    private void SearchProducts(string searchText)
-    {
-        if (allProducts == null)
-            return;
-        if (searchText == "")
-        {
-            searchResults = allProducts;
-            return;
-        }
-        else
-        {
-            searchResults = allProducts
-                .FindAll(p => p.Name.ToLower().Contains(searchText.ToLower()) || p.Barcode.ToLower().Contains(searchText.ToLower()));
-        }
-
-
-        productsListView.ItemsSource = searchResults;
-    }
-
-    private async void OnProductSelected(object sender, SelectedItemChangedEventArgs e)
-    {
-        if (e.SelectedItem != null && e.SelectedItem is Product selectedProduct)
-        {
-            try
+            if (response.IsSuccessStatusCode)
             {
-                foreach (var child in Layout.Children)
-                {
-                    if (child is BoxViewExtensions containerBox)
-                    {
-                        var label = new Label
-                        {
-
-                        };
-                        containerBox.BorderColor = Colors.Black;
-                        containerBox.Content = label;
-                    }
-                }
-                var containerIds = await GetDistinctContainerIds(selectedProduct.ProductId, shopId);
-
-                foreach (var containerId in containerIds)
-                {
-
-                    foreach (var child in Layout.Children)
-                    {
-                        if (child is BoxViewExtensions containerBox)
-                        {
-                            int containerBoxId = BoxViewExtensions.GetId(containerBox);
-                            if (containerBoxId == containerId)
-                            {
-
-                                var label = new Label
-                                {
-                                    Text = selectedProduct.Name,
-                                    TextColor = Colors.White,
-                                    HorizontalTextAlignment = TextAlignment.Center,
-                                    VerticalTextAlignment = TextAlignment.Center,
-                                    FontAttributes = FontAttributes.Bold,
-                                };
-                                containerBox.BorderColor = Colors.Red;
-                                containerBox.Content = label;
-                            }
-                        }
-                    }
-                }
-
+                var responseData = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<List<Product>>(responseData);
             }
-            catch (Exception ex)
+            else
             {
-                await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+                throw new Exception("Error while fetching products in container.");
             }
-
-            ((ListView)sender).SelectedItem = null;
         }
     }
+
+
     private async Task<List<int>> GetDistinctContainerIds(int productId, int shopId)
     {
         using (HttpClient client = new HttpClient())
         {
-
+   
             string endpoint = $"{apiBaseUrl}/api/Products/GetDistinctContainerIds/{productId}/{shopId}";
-
+   
             var response = await client.GetAsync(endpoint);
-
+   
             if (response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
@@ -166,39 +123,28 @@ public partial class ProductSearchPage : ContentPage
             }
         }
     }
-
-    private void OnSearchBarFocused(object sender, EventArgs e)
-    {
-        isSearchBarFocused = true;
-        productsListView.IsVisible = true;
-    }
-
-    private void OnSearchBarUnfocused(object sender, EventArgs e)
-    {
-        isSearchBarFocused = false;
-        productsListView.IsVisible = false;
-    }
+   
     private async Task LoadMap()
     {
         try
         {
             var shopMapData = await GetShopMapDataFromDatabase();
-
+   
             if (shopMapData != null)
             {
                 var shopBox = CreateShopBox(shopMapData.Width, shopMapData.Length);
                 Layout.Children.Add(shopBox);
-
+   
                 BoxViewExtensions.SetId(shopBox, shopMapData.ShopId);
-
+   
                 var containers = await GetContainersByShopIdFromDatabase(shopMapData.ShopId);
-
+   
                 foreach (var containerData in containers)
                 {
                     var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)containerData.CoordinateX, (int)containerData.CoordinateY, containerData.ContainerType);
-
+   
                     BoxViewExtensions.SetId(containerBox, containerData.ContainerId);
-
+   
                     Layout.Children.Add(containerBox);
                 }
             }
@@ -208,7 +154,7 @@ public partial class ProductSearchPage : ContentPage
             throw new Exception($"B³¹d podczas wczytywania mapy: {ex.Message}");
         }
     }
-
+   
     private BoxViewExtensions CreateShopBox(double width, double length)
     {
         var shopBox = new BoxViewExtensions
@@ -221,10 +167,10 @@ public partial class ProductSearchPage : ContentPage
         Layout.SetRow(shopBox, 1);
         return shopBox;
     }
-
+   
     private Frame CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
-
+   
         var containerBox = new BoxViewExtensions
         {
             WidthRequest = width * skala,
@@ -232,17 +178,17 @@ public partial class ProductSearchPage : ContentPage
             CornerRadius = 10,
             BorderColor = Colors.Black,
         };
-
-
+   
+   
         containerBox.TranslationX = coordinateX;
         containerBox.TranslationY = coordinateY;
         containerBox.ClassId = containerType;
-
+   
         switch (containerBox.ClassId)
         {
             case "Pó³ka":
                 containerBox.BackgroundColor = Colors.BurlyWood; break;
-
+   
             case "Lodówka":
                 containerBox.BackgroundColor = Colors.SkyBlue; break;
             case "Zamra¿arka":
@@ -254,7 +200,7 @@ public partial class ProductSearchPage : ContentPage
             default:
                 break;
         }
-
+   
         var tapGesture = new TapGestureRecognizer();
         tapGesture.Tapped += ShelfTapped;
         containerBox.GestureRecognizers.Add(tapGesture);
@@ -266,7 +212,7 @@ public partial class ProductSearchPage : ContentPage
         using (HttpClient client = new HttpClient())
         {
             var response = await client.GetAsync($"{apiBaseUrl}/api/Shops/GetShopById/{shopId}");
-
+   
             if (response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
@@ -283,7 +229,7 @@ public partial class ProductSearchPage : ContentPage
         using (HttpClient client = new HttpClient())
         {
             var response = await client.GetAsync($"{apiBaseUrl}/api/Containers/GetContainersByShopId/{shopId}");
-
+   
             if (response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
@@ -299,15 +245,14 @@ public partial class ProductSearchPage : ContentPage
     {
         if (sender is BoxViewExtensions selectedShelf)
         {
-            int containerId = BoxViewExtensions.GetId(selectedShelf);
-            await Navigation.PushAsync(new ProductsInContainerListPage(containerId));
+            List<Product> productsToBuy = BoxViewExtensions.GetProductList(selectedShelf);
+            await Navigation.PushAsync(new ProductToBuyFromContainerPage(productsToBuy));
         }
     }
-
+   
     private async void Back_Clicked(object sender, EventArgs e)
     {
-        var ShopListPage = new ShopListPage("Search");
+        var ShopListPage = new ShopListPage("ShoppingList", shoppingListId);
         await Navigation.PushAsync(ShopListPage);
     }
-
 }

@@ -48,22 +48,20 @@ public partial class ShoppingListListPage : ContentPage
             await DisplayAlert("B³¹d", ex.Message, "OK");
         }
     }
-
-    private async void ShoppingListsListView_ItemTapped(object sender, ItemTappedEventArgs e)
+    private async void EditListButton_Clicked(object sender, EventArgs e)
     {
         try
         {
-            if (e.Item is ShoppingList selectedShoppingList)
-            {
+            var button = (Button)sender;
+            var selectedShoppingList = (ShoppingList)button.BindingContext;
 
-                Console.WriteLine($"Item tapped: {selectedShoppingList.ListName}, ShoppingListId: {selectedShoppingList.ShoppingListId}");
+            Console.WriteLine($"Button clicked: {selectedShoppingList.ListName}, ShoppingListId: {selectedShoppingList.ShoppingListId}");
 
-                await Navigation.PushAsync(new ShoppingListEditPage(selectedShoppingList.ShoppingListId));
-            }
+            await Navigation.PushAsync(new ShoppingListEditPage(selectedShoppingList.ShoppingListId));
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Exception in ShoppingListsListView_ItemTapped: {ex.Message}");
+            Console.WriteLine($"Exception in EditListButton_Clicked: {ex.Message}");
         }
     }
 
@@ -144,6 +142,23 @@ public partial class ShoppingListListPage : ContentPage
         catch (Exception ex)
         {
             await DisplayAlert("Error", $"An error occurred: {ex.Message}", "OK");
+        }
+    }
+
+    private async void SearchListButton_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            var button = (Button)sender;
+            var selectedShoppingList = (ShoppingList)button.BindingContext;
+
+            Console.WriteLine($"Button clicked: {selectedShoppingList.ListName}, ShoppingListId: {selectedShoppingList.ShoppingListId}");
+
+            await Navigation.PushAsync(new ShopListPage("ShoppingList", selectedShoppingList.ShoppingListId));
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception {ex.Message}");
         }
     }
 }

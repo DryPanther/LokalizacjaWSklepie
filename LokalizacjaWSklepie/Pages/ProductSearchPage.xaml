@@ -28,7 +28,6 @@
                             <StackLayout Padding="10">
                                 <Label Text="{Binding Name}" FontAttributes="Bold" />
                                 <Label Text="{Binding Barcode}" />
-                                <!-- Dodaj dodatkowe informacje, jeśli są potrzebne -->
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

@@ -8,12 +8,14 @@
             <Button Text="Stwórz listę zakupów" x:Name="Create" Clicked="Create_Clicked"/>
             <Button Text="Powrót" x:Name="Back" Clicked="Back_Clicked"/>
             <SearchBar x:Name="shoppingListSearchBar" Placeholder="Wyszukaj listę zakupów..." SearchButtonPressed="OnShoppingListSearchButtonPressed" TextChanged="OnShoppingListSearchTextChanged" />
-            <ListView x:Name="ShoppingListsListView" ItemTapped="ShoppingListsListView_ItemTapped">
+            <ListView x:Name="ShoppingListsListView">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <StackLayout Orientation="Horizontal">
-                                <Label Text="{Binding ListName}" FontAttributes="Bold" />
+                                <Label FontSize="Title" Text="{Binding ListName}" FontAttributes="Bold" />
+                                <Button x:Name="EditListButton" Text="Edytuj listę" Clicked="EditListButton_Clicked"/>
+                                <Button x:Name="SearchListButton" Text="Wyszukaj produkty w sklepie" Clicked="SearchListButton_Clicked"/>
                             </StackLayout>
                         </ViewCell>
                     </DataTemplate>

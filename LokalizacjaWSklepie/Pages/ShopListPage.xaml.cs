@@ -5,6 +5,7 @@ using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;
 
 using System.Collections.ObjectModel;
+using System.Xml.Serialization;
 
 namespace LokalizacjaWSklepie.Pages
 {
@@ -13,14 +14,19 @@ namespace LokalizacjaWSklepie.Pages
         private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
         private ObservableCollection<Shop> shops;
         private string chose;
+        private int shoppingListId;
 
-        public ShopListPage(string choice)
+        public ShopListPage(string choice, int? shoppingListId = null)
         {
             InitializeComponent();
             shops = new ObservableCollection<Shop>();
             ShopsListView.ItemsSource = shops;
             LoadShops();
             chose = choice;
+            if (shoppingListId != null)
+            {
+                this.shoppingListId = shoppingListId.Value;
+            }
             if (choice != "EditShops")
             {
                 Create.IsVisible = false;
@@ -88,6 +94,12 @@ namespace LokalizacjaWSklepie.Pages
 
                         await Navigation.PushAsync(new ProductSearchPage(selectedShop.ShopId, selectedShop.Name));
                     }
+                    if (chose == "ShoppingList")
+                    {
+                        Console.WriteLine($"Item tapped: {selectedShop.Name}, ShopId: {selectedShop.ShopId}");
+
+                        await Navigation.PushAsync(new ShoppingListSearchPage(selectedShop.ShopId, selectedShop.Name, shoppingListId));
+                    }
 
                 }
             }
@@ -105,7 +117,12 @@ namespace LokalizacjaWSklepie.Pages
 
         private async void Back_Clicked(object sender, EventArgs e)
         {
-            if (Memory.Instance.user.Role == "Admin")
+            if (chose == "ShoppingList")
+            {
+                var ShoppingListListPage = new ShoppingListListPage();
+                await Navigation.PushAsync(ShoppingListListPage);
+            }
+            else if (Memory.Instance.user.Role == "Admin")
             {
                 var AdminMenuPage = new AdminMenuPage();
                 await Navigation.PushAsync(AdminMenuPage);
@@ -115,6 +132,7 @@ namespace LokalizacjaWSklepie.Pages
                 var ClientMenuPage = new ClientMenuPage();
                 await Navigation.PushAsync(ClientMenuPage);
             }
+            
             
         }
 

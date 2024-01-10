@@ -11,6 +11,7 @@ public partial class MapEditorPage : ContentPage
 {
     private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
     private int skala = 100;
+    private decimal skala1 = 100;
     private bool trybUsuwanie = false;
     private int shopId;
     private List<Container> existingContainerIds = new List<Container> { };
@@ -40,7 +41,7 @@ public partial class MapEditorPage : ContentPage
 
                 foreach (var containerData in containers)
                 {
-                    var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)containerData.CoordinateX, (int)containerData.CoordinateY, containerData.ContainerType);
+                    var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)Math.Round((decimal)containerData.CoordinateX *(skala1/100)), (int)Math.Round((decimal)containerData.CoordinateY*(skala1 / 100)), containerData.ContainerType);
 
                     BoxViewExtensions.SetId(containerBox, containerData.ContainerId);
 

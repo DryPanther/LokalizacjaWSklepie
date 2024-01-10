@@ -1,4 +1,3 @@
-using Android.Widget;
 using LokalizacjaWSklepie.Models;
 using LokalizacjaWSklepie.Properties;
 using Newtonsoft.Json;

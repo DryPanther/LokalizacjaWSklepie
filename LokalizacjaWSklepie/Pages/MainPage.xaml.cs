@@ -21,7 +21,7 @@ public partial class MainPage : ContentPage
         var user = await GetUser();
         if (user == null)
         {
-            await DisplayAlert("Błąd", "Błąd podczas łączenia z bazą", "OK");
+            await DisplayAlert("Błąd", "Błąd podczas łączenia z bazą lub nie ma takiego użytkownika", "OK");
         }
         else
         {
@@ -45,6 +45,10 @@ public partial class MainPage : ContentPage
                 {
                     await DisplayAlert("Błąd", "Błąd podczas uzyskiwania roli", "OK");
                 }
+            }
+            else
+            {
+                await DisplayAlert("Błąd", "Kombinacja email i hasła niepoprawna", "OK");
             }
         }
 
