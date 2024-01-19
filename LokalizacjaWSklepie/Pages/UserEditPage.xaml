@@ -11,10 +11,9 @@
         <Entry Text="{Binding Email}" />
 
         <Label Text="Hasło:" />
-        <Entry Text="{Binding Password}" />
+        <Entry Text="{Binding Password}" IsPassword="True"/>
 
-        <Label Text="Rola:" />
-        <Picker Title="Select Quantity Type" SelectedItem="{Binding Role}">
+        <Picker Title="Wybierz role użytkownika" SelectedItem="{Binding Role}">
             <Picker.ItemsSource>
                 <x:Array Type="{x:Type x:String}">
                     <x:String>Admin</x:String>

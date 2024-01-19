@@ -4,17 +4,16 @@
              x:Class="LokalizacjaWSklepie.Pages.EditProductPage"
              Title="Edit Product">
     <StackLayout>
-        <Label Text="Name:" />
+        <Label Text="Nazwa:" />
         <Entry Text="{Binding Name}" />
 
-        <Label Text="Base Price:" />
+        <Label Text="Cena Bazowa:" />
         <Entry Text="{Binding BasePrice}" />
 
-        <Label Text="Barcode:" />
+        <Label Text="Kod Kreskowy:" />
         <Entry Text="{Binding Barcode}" />
 
-        <Label Text="Quantity Type:" />
-        <Picker Title="Select Quantity Type" SelectedItem="{Binding QuantityType}">
+        <Picker Title="Wybierz typ ilości" SelectedItem="{Binding QuantityType}">
             <Picker.ItemsSource>
                 <x:Array Type="{x:Type x:String}">
                     <x:String>Szt</x:String>
