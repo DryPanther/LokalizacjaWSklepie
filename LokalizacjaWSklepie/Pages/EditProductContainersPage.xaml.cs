@@ -33,7 +33,7 @@ public partial class EditProductContainersPage : ContentPage
                 shopBox.ClassId = "Sklep";
                 Layout.Children.Add(shopBox);
 
-                BoxViewExtensions.SetId(shopBox, shopMapData.ShopId);
+                FrameExtensions.SetId(shopBox, shopMapData.ShopId);
 
                 var containers = await GetContainersByShopIdFromDatabase(shopMapData.ShopId);
 
@@ -41,7 +41,7 @@ public partial class EditProductContainersPage : ContentPage
                 {
                     var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)containerData.CoordinateX, (int)containerData.CoordinateY, containerData.ContainerType);
 
-                    BoxViewExtensions.SetId(containerBox, containerData.ContainerId);
+                    FrameExtensions.SetId(containerBox, containerData.ContainerId);
 
                     Layout.Children.Add(containerBox);
                 }
@@ -53,9 +53,9 @@ public partial class EditProductContainersPage : ContentPage
         }
     }
 
-    private BoxViewExtensions CreateShopBox(double width, double length)
+    private FrameExtensions CreateShopBox(double width, double length)
     {
-        var shopBox = new BoxViewExtensions
+        var shopBox = new FrameExtensions
         {
             BackgroundColor = Colors.LightGray,
             WidthRequest = width * skala,
@@ -68,7 +68,7 @@ public partial class EditProductContainersPage : ContentPage
 
     private Frame CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
-        var containerBox = new BoxViewExtensions
+        var containerBox = new FrameExtensions
         {
             WidthRequest = width * skala,
             HeightRequest = length * skala,
@@ -143,9 +143,9 @@ public partial class EditProductContainersPage : ContentPage
     }
     private async void ShelfTapped(object sender, EventArgs e)
     {
-        if (sender is BoxViewExtensions selectedShelf)
+        if (sender is FrameExtensions selectedShelf)
         {
-            int containerId = BoxViewExtensions.GetId(selectedShelf);
+            int containerId = FrameExtensions.GetId(selectedShelf);
             await Navigation.PushAsync(new ProductsInContainerPage(containerId, shopId, name));
         }
     }
@@ -153,7 +153,7 @@ public partial class EditProductContainersPage : ContentPage
     {
         if (skala1 < 150)
         {
-            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            foreach (var item in Layout.OfType<FrameExtensions>())
             {
                 item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
                 item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
@@ -172,7 +172,7 @@ public partial class EditProductContainersPage : ContentPage
     {
         if (skala1 > 40)
         {
-            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            foreach (var item in Layout.OfType<FrameExtensions>())
             {
                 item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
                 item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);

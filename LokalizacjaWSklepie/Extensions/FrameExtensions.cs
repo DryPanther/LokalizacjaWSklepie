@@ -2,13 +2,13 @@
 
 namespace LokalizacjaWSklepie.Extensions
 {
-    public class BoxViewExtensions : Frame
+    public class FrameExtensions : Frame
     {
         public static readonly BindableProperty IdProperty =
-            BindableProperty.CreateAttached("Id", typeof(int), typeof(BoxViewExtensions), 0);
+            BindableProperty.CreateAttached("Id", typeof(int), typeof(FrameExtensions), 0);
 
         public static readonly BindableProperty ProductListProperty =
-            BindableProperty.CreateAttached("ProductList", typeof(List<Product>), typeof(BoxViewExtensions), null);
+            BindableProperty.CreateAttached("ProductList", typeof(List<Product>), typeof(FrameExtensions), null);
 
         public static int GetId(BindableObject view)
         {

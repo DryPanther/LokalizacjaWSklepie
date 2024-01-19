@@ -19,7 +19,7 @@ namespace LokalizacjaWSklepie.Pages
             MapCreate();
         }
 
-        private async Task SaveContainerToDatabase(BoxViewExtensions container, double width, double height, int shopId)
+        private async Task SaveContainerToDatabase(FrameExtensions container, double width, double height, int shopId)
         {
             var newContainer = new Container
             {
@@ -48,7 +48,7 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private async Task<int> SaveShopToDatabase(BoxViewExtensions shopBox)
+        private async Task<int> SaveShopToDatabase(FrameExtensions shopBox)
         {
             try
             {
@@ -106,7 +106,7 @@ namespace LokalizacjaWSklepie.Pages
         }
         private async Task SaveMapToDatabase()
         {
-            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxViewExtensions box && box.ClassId == "Sklep") as BoxViewExtensions;
+            var shopBox = Layout.Children.FirstOrDefault(child => child is FrameExtensions box && box.ClassId == "Sklep") as FrameExtensions;
 
             if (shopBox != null)
             {
@@ -114,7 +114,7 @@ namespace LokalizacjaWSklepie.Pages
 
                 foreach (var child in Layout.Children)
                 {
-                    if (child is BoxViewExtensions container && container.ClassId != "Sklep")
+                    if (child is FrameExtensions container && container.ClassId != "Sklep")
                     {
                         await SaveContainerToDatabase(container, container.Width / skala, container.Height / skala, shopId);
                     }
@@ -130,7 +130,7 @@ namespace LokalizacjaWSklepie.Pages
         }
         private async void ShelfTapped(object sender, EventArgs e)
         {
-            if (sender is BoxViewExtensions selectedShelf)
+            if (sender is FrameExtensions selectedShelf)
             {
                 if (!trybUsuwanie)
                 {
@@ -188,7 +188,7 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private async Task ChangeContainerType(BoxViewExtensions selectedShelf)
+        private async Task ChangeContainerType(FrameExtensions selectedShelf)
         {
             List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
             string selectedType = await DisplayActionSheet("Wybierz typ pojemnika", "Anuluj", null, availableTypes.ToArray());
@@ -199,7 +199,7 @@ namespace LokalizacjaWSklepie.Pages
             }
         }
 
-        private void UpdateContainerTypeInMemory(BoxViewExtensions selectedShelf, string newType)
+        private void UpdateContainerTypeInMemory(FrameExtensions selectedShelf, string newType)
         {
             selectedShelf.ClassId = newType;
         }
@@ -219,7 +219,7 @@ namespace LokalizacjaWSklepie.Pages
 
                     if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                     {
-                        var Sklep = new BoxViewExtensions
+                        var Sklep = new FrameExtensions
                         {
                             BackgroundColor = Colors.LightGray,
                             WidthRequest = szerokosc * skala,
@@ -254,7 +254,7 @@ namespace LokalizacjaWSklepie.Pages
 
         private void PrzesunProstokat(object sender, PanUpdatedEventArgs e)
         {
-            var prostokat = (BoxViewExtensions)sender;
+            var prostokat = (FrameExtensions)sender;
 
             switch (e.StatusType)
             {
@@ -289,7 +289,7 @@ namespace LokalizacjaWSklepie.Pages
 
                 if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
                 {
-                    var prostokat = new BoxViewExtensions
+                    var prostokat = new FrameExtensions
                     {
                         WidthRequest = szerokosc * skala1,
                         HeightRequest = wysokosc * skala1,
@@ -362,7 +362,7 @@ namespace LokalizacjaWSklepie.Pages
         {
             if (skala1 < 150)
             {
-                foreach (var item in Layout.OfType<BoxViewExtensions>())
+                foreach (var item in Layout.OfType<FrameExtensions>())
                 {
                     item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
                     item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
@@ -381,7 +381,7 @@ namespace LokalizacjaWSklepie.Pages
         {
             if (skala1 > 40)
             {
-                foreach (var item in Layout.OfType<BoxViewExtensions>())
+                foreach (var item in Layout.OfType<FrameExtensions>())
                 {
                     item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
                     item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);

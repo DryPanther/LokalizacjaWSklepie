@@ -41,20 +41,20 @@ public partial class ShoppingListSearchPage : ContentPage
                 foreach (var containerId in containerIds)
                 {
 
-                    foreach (var containerBox in Layout.Children.OfType<BoxViewExtensions>())
+                    foreach (var containerBox in Layout.Children.OfType<FrameExtensions>())
                     {
 
-                        int containerBoxId = BoxViewExtensions.GetId(containerBox);
+                        int containerBoxId = FrameExtensions.GetId(containerBox);
 
                         if (containerBoxId == containerId)
                         {
-                            List<Product> productsInContainer = BoxViewExtensions.GetProductList(containerBox);
+                            List<Product> productsInContainer = FrameExtensions.GetProductList(containerBox);
                             if (productsInContainer == null)
                             {
                                 productsInContainer = new List<Product>();
                             }
                             productsInContainer.Add(product);
-                            BoxViewExtensions.SetProductList(containerBox, productsInContainer);
+                            FrameExtensions.SetProductList(containerBox, productsInContainer);
                             int numberOfProductsInContainer = productsInContainer.Count;
                             var label = new Label
                             {
@@ -130,7 +130,7 @@ public partial class ShoppingListSearchPage : ContentPage
                 var shopBox = CreateShopBox(shopMapData.Width, shopMapData.Length);
                 Layout.Children.Add(shopBox);
    
-                BoxViewExtensions.SetId(shopBox, shopMapData.ShopId);
+                FrameExtensions.SetId(shopBox, shopMapData.ShopId);
    
                 var containers = await GetContainersByShopIdFromDatabase(shopMapData.ShopId);
    
@@ -138,7 +138,7 @@ public partial class ShoppingListSearchPage : ContentPage
                 {
                     var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)containerData.CoordinateX, (int)containerData.CoordinateY, containerData.ContainerType);
    
-                    BoxViewExtensions.SetId(containerBox, containerData.ContainerId);
+                    FrameExtensions.SetId(containerBox, containerData.ContainerId);
    
                     Layout.Children.Add(containerBox);
                 }
@@ -150,9 +150,9 @@ public partial class ShoppingListSearchPage : ContentPage
         }
     }
    
-    private BoxViewExtensions CreateShopBox(double width, double length)
+    private FrameExtensions CreateShopBox(double width, double length)
     {
-        var shopBox = new BoxViewExtensions
+        var shopBox = new FrameExtensions
         {
             BackgroundColor = Colors.LightGray,
             WidthRequest = width * skala,
@@ -166,7 +166,7 @@ public partial class ShoppingListSearchPage : ContentPage
     private Frame CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
    
-        var containerBox = new BoxViewExtensions
+        var containerBox = new FrameExtensions
         {
             WidthRequest = width * skala,
             HeightRequest = length * skala,
@@ -238,9 +238,9 @@ public partial class ShoppingListSearchPage : ContentPage
     }
     private async void ShelfTapped(object sender, EventArgs e)
     {
-        if (sender is BoxViewExtensions selectedShelf)
+        if (sender is FrameExtensions selectedShelf)
         {
-            List<Product> productsToBuy = BoxViewExtensions.GetProductList(selectedShelf);
+            List<Product> productsToBuy = FrameExtensions.GetProductList(selectedShelf);
             await Navigation.PushAsync(new ProductToBuyFromContainerPage(productsToBuy));
         }
     }
@@ -254,7 +254,7 @@ public partial class ShoppingListSearchPage : ContentPage
     {
         if (skala1 < 150)
         {
-            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            foreach (var item in Layout.OfType<FrameExtensions>())
             {
                 item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
                 item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
@@ -273,7 +273,7 @@ public partial class ShoppingListSearchPage : ContentPage
     {
         if (skala1 > 40)
         {
-            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            foreach (var item in Layout.OfType<FrameExtensions>())
             {
                 item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
                 item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);

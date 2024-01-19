@@ -19,7 +19,7 @@ namespace LokalizacjaWSklepie.Pages
         {
             InitializeComponent();
             double screenHeight = DeviceDisplay.MainDisplayInfo.Height;
-            double gridHeightPercentage = 0.12;
+            double gridHeightPercentage = 0.23;
             Scroll1.HeightRequest = screenHeight * gridHeightPercentage;
             Scroll2.HeightRequest = screenHeight * gridHeightPercentage;
             this.containerId = containerId;

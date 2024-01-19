@@ -35,7 +35,7 @@ public partial class MapEditorPage : ContentPage
                 var shopBox = CreateShopBox(shopMapData.Width, shopMapData.Length);
                 Layout.Children.Add(shopBox);
 
-                BoxViewExtensions.SetId(shopBox, shopMapData.ShopId);
+                FrameExtensions.SetId(shopBox, shopMapData.ShopId);
 
                 var containers = await GetContainersByShopIdFromDatabase(shopMapData.ShopId);
 
@@ -43,7 +43,7 @@ public partial class MapEditorPage : ContentPage
                 {
                     var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)Math.Round((double)containerData.CoordinateX *(skala1/100)), (int)Math.Round((double)containerData.CoordinateY*(skala1 / 100)), containerData.ContainerType);
 
-                    BoxViewExtensions.SetId(containerBox, containerData.ContainerId);
+                    FrameExtensions.SetId(containerBox, containerData.ContainerId);
 
                     Layout.Children.Add(containerBox);
                 }
@@ -55,9 +55,9 @@ public partial class MapEditorPage : ContentPage
         }
     }
 
-    private BoxViewExtensions CreateShopBox(double width, double length)
+    private FrameExtensions CreateShopBox(double width, double length)
     {
-        var shopBox = new BoxViewExtensions
+        var shopBox = new FrameExtensions
         {
             BackgroundColor = Colors.LightGray,
             WidthRequest = width * skala,
@@ -73,7 +73,7 @@ public partial class MapEditorPage : ContentPage
 
     private Frame CreateContainerBox(double width, double length, int coordinateX, int coordinateY, string containerType)
     {
-        var containerBox = new BoxViewExtensions
+        var containerBox = new FrameExtensions
         {
             WidthRequest = width * skala1,
             HeightRequest = length * skala1,
@@ -153,9 +153,9 @@ public partial class MapEditorPage : ContentPage
         {
             foreach (var child in Layout.Children)
             {
-                if (child is BoxViewExtensions container && container.ClassId != "Sklep")
+                if (child is FrameExtensions container && container.ClassId != "Sklep")
                 {
-                    int containerId = BoxViewExtensions.GetId(container);
+                    int containerId = FrameExtensions.GetId(container);
 
                     if (containerId > 0)
                     {
@@ -203,7 +203,7 @@ public partial class MapEditorPage : ContentPage
         }
     }
 
-    private async Task AddContainerToDatabase(BoxViewExtensions container)
+    private async Task AddContainerToDatabase(FrameExtensions container)
     {
         using (HttpClient client = new HttpClient())
         {
@@ -237,7 +237,7 @@ public partial class MapEditorPage : ContentPage
     }
     private async void ShelfTapped(object sender, EventArgs e)
     {
-        if (sender is BoxViewExtensions selectedShelf)
+        if (sender is FrameExtensions selectedShelf)
         {
             if (!trybUsuwanie)
             {
@@ -289,7 +289,7 @@ public partial class MapEditorPage : ContentPage
             }
         }
     }
-    private async Task ChangeContainerType(BoxViewExtensions selectedShelf)
+    private async Task ChangeContainerType(FrameExtensions selectedShelf)
     {
         List<string> availableTypes = new List<string> { "Pó³ka", "Lodówka", "Zamra¿arka", "Stojak", "Kasa" };
         string selectedType = await DisplayActionSheet("Wybierz typ pojemnika", "Anuluj", null, availableTypes.ToArray());
@@ -299,7 +299,7 @@ public partial class MapEditorPage : ContentPage
             UpdateContainerTypeInMemory(selectedShelf, selectedType);
         }
     }
-    private void UpdateContainerTypeInMemory(BoxViewExtensions selectedShelf, string newType)
+    private void UpdateContainerTypeInMemory(FrameExtensions selectedShelf, string newType)
     {
         selectedShelf.ClassId = newType;
     }
@@ -307,7 +307,7 @@ public partial class MapEditorPage : ContentPage
     private double poprzedniaX, poprzedniaY;
     private void PrzesunProstokat(object sender, PanUpdatedEventArgs e)
     {
-        var prostokat = (BoxViewExtensions)sender;
+        var prostokat = (FrameExtensions)sender;
 
         switch (e.StatusType)
         {
@@ -357,7 +357,7 @@ public partial class MapEditorPage : ContentPage
     {
         try
         {
-            var shopBox = Layout.Children.FirstOrDefault(child => child is BoxViewExtensions box && box.ClassId == "Sklep") as BoxViewExtensions;
+            var shopBox = Layout.Children.FirstOrDefault(child => child is FrameExtensions box && box.ClassId == "Sklep") as FrameExtensions;
 
             if (shopBox != null)
             {
@@ -407,7 +407,7 @@ public partial class MapEditorPage : ContentPage
         var ShopListPage = new ShopListPage("EditShops");
         await Navigation.PushAsync(ShopListPage);
     }
-    private int? GetShopIdFromMemory(BoxViewExtensions shopBox)
+    private int? GetShopIdFromMemory(FrameExtensions shopBox)
     {
         return shopId;
     }
@@ -422,7 +422,7 @@ public partial class MapEditorPage : ContentPage
             if (dimensions.Length == 2 && double.TryParse(dimensions[0], out double szerokosc) && double.TryParse(dimensions[1], out double wysokosc))
             {
 
-                var prostokat = new BoxViewExtensions
+                var prostokat = new FrameExtensions
                 {
                     WidthRequest = szerokosc * skala,
                     HeightRequest = wysokosc * skala,
@@ -582,7 +582,7 @@ public partial class MapEditorPage : ContentPage
     {
         if (skala1 < 150)
         {
-            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            foreach (var item in Layout.OfType<FrameExtensions>())
             {
                 item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
                 item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
@@ -601,7 +601,7 @@ public partial class MapEditorPage : ContentPage
     {
         if (skala1 > 40)
         {
-            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            foreach (var item in Layout.OfType<FrameExtensions>())
             {
                 item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
                 item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);
