@@ -18,6 +18,16 @@
                 <Button Text="Dodaj pojemnik" Clicked="AddContainer_Clicked" />
             <Button Text="Przełącz tryb usuwania" Clicked="SwitchModeButton_Clicked" />
                 <Button Text="Zapisz Mapę" Clicked="SaveMapButton_Clicked" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Text="-" Clicked="ScaleSub_Clicked" Grid.Column="0" />
+                    <Label x:Name="Scale" Text="100%" HorizontalTextAlignment="Center" VerticalTextAlignment="Center" FontSize="Medium" FontAttributes="Bold" Grid.Column="1"/>
+                    <Button Text="+" Clicked="ScaleAdd_Clicked" Grid.Column="2"/>
+                </Grid>
             </VerticalStackLayout>
     </Grid>
     </ScrollView>

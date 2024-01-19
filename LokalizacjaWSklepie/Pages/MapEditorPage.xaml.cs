@@ -11,7 +11,7 @@ public partial class MapEditorPage : ContentPage
 {
     private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
     private int skala = 100;
-    private decimal skala1 = 100;
+    private double skala1 = 100;
     private bool trybUsuwanie = false;
     private int shopId;
     private List<Container> existingContainerIds = new List<Container> { };
@@ -41,7 +41,7 @@ public partial class MapEditorPage : ContentPage
 
                 foreach (var containerData in containers)
                 {
-                    var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)Math.Round((decimal)containerData.CoordinateX *(skala1/100)), (int)Math.Round((decimal)containerData.CoordinateY*(skala1 / 100)), containerData.ContainerType);
+                    var containerBox = CreateContainerBox(containerData.Width, containerData.Length, (int)Math.Round((double)containerData.CoordinateX *(skala1/100)), (int)Math.Round((double)containerData.CoordinateY*(skala1 / 100)), containerData.ContainerType);
 
                     BoxViewExtensions.SetId(containerBox, containerData.ContainerId);
 
@@ -164,10 +164,10 @@ public partial class MapEditorPage : ContentPage
                         if (existingContainer != null)
                         {
                             existingContainer.ContainerId = containerId;
-                            existingContainer.Width = container.Width / skala;
-                            existingContainer.Length = container.Height / skala;
-                            existingContainer.CoordinateX = (int)container.TranslationX;
-                            existingContainer.CoordinateY = (int)container.TranslationY;
+                            existingContainer.Width = container.Width / skala1;
+                            existingContainer.Length = container.Height / skala1;
+                            existingContainer.CoordinateX = (int)((container.TranslationX*100)/skala1);
+                            existingContainer.CoordinateY = (int)((container.TranslationY * 100)/ skala1);
                             existingContainer.ContainerType = container.ClassId;
 
                             await UpdateContainerInDatabase(existingContainer);
@@ -369,8 +369,8 @@ public partial class MapEditorPage : ContentPage
 
                     if (existingShop != null)
                     {
-                        existingShop.Width = shopBox.Width / skala;
-                        existingShop.Length = shopBox.Height / skala;
+                        existingShop.Width = shopBox.Width / skala1;
+                        existingShop.Length = shopBox.Height / skala1;
 
                         await UpdateShopInDatabase(existingShop);
                     }
@@ -577,5 +577,43 @@ public partial class MapEditorPage : ContentPage
         {
             throw new Exception($"B³¹d podczas usuwania pojemnika sklepu z bazy danych: {ex.Message}");
         }
+    }
+    private void ScaleAdd_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 < 150)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 + 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 + 10) * 0.01);
+                }
+            }
+            skala1 += 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+        
+    }
+    private void ScaleSub_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 > 40)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 - 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 - 10) * 0.01);
+                }
+            }
+            skala1 -= 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+        
     }
 }

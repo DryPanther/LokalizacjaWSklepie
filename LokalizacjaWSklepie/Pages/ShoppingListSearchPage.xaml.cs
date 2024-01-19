@@ -9,6 +9,7 @@ public partial class ShoppingListSearchPage : ContentPage
 {
     private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
     private int skala = 100;
+    private double skala1 = 100;
     private int shopId;
     private string name;
     private int shoppingListId;
@@ -27,17 +28,12 @@ public partial class ShoppingListSearchPage : ContentPage
         await LoadMap();
         LoadShoppingList();
     }
-    private async void ShowProductsButton_Clicked(object sender, EventArgs e)
-    {
-        productsListView.IsVisible = !productsListView.IsVisible;
-        await productsListFrame.TranslateTo(productsListFrame.IsVisible ? 0 : productsListFrame.Width, 0, 250, Easing.CubicInOut);
-    }
+
     private async void LoadShoppingList()
     {
         try
         {
             List<Product> productsOnShoppingList = await GetProductsOnShoppingList(shoppingListId);
-            productsListView.ItemsSource = productsOnShoppingList;
             foreach (var product in productsOnShoppingList)
             {
                 var containerIds = await GetDistinctContainerIds(product.ProductId, shopId);
@@ -49,7 +45,7 @@ public partial class ShoppingListSearchPage : ContentPage
                     {
 
                         int containerBoxId = BoxViewExtensions.GetId(containerBox);
-                        
+
                         if (containerBoxId == containerId)
                         {
                             List<Product> productsInContainer = BoxViewExtensions.GetProductList(containerBox);
@@ -72,11 +68,11 @@ public partial class ShoppingListSearchPage : ContentPage
                             containerBox.BorderColor = Colors.Red;
                             containerBox.Content = label;
                         }
-                    
+
                     }
                 }
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -107,11 +103,11 @@ public partial class ShoppingListSearchPage : ContentPage
     {
         using (HttpClient client = new HttpClient())
         {
-   
+
             string endpoint = $"{apiBaseUrl}/api/Products/GetDistinctContainerIds/{productId}/{shopId}";
-   
+
             var response = await client.GetAsync(endpoint);
-   
+
             if (response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
@@ -123,7 +119,6 @@ public partial class ShoppingListSearchPage : ContentPage
             }
         }
     }
-   
     private async Task LoadMap()
     {
         try
@@ -254,5 +249,43 @@ public partial class ShoppingListSearchPage : ContentPage
     {
         var ShopListPage = new ShopListPage("ShoppingList", shoppingListId);
         await Navigation.PushAsync(ShopListPage);
+    }
+    private void ScaleAdd_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 < 150)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 + 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 + 10) * 0.01);
+                }
+            }
+            skala1 += 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+
+    }
+    private void ScaleSub_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 > 40)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 - 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 - 10) * 0.01);
+                }
+            }
+            skala1 -= 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+
     }
 }

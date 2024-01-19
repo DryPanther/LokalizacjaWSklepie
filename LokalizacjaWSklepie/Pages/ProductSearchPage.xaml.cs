@@ -10,6 +10,7 @@ public partial class ProductSearchPage : ContentPage
 {
     private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
     private int skala = 100;
+    private double skala1 = 100;
     private int shopId;
     private string name;
     private List<Container> currentContainers;
@@ -308,6 +309,44 @@ public partial class ProductSearchPage : ContentPage
     {
         var ShopListPage = new ShopListPage("Search");
         await Navigation.PushAsync(ShopListPage);
+    }
+    private void ScaleAdd_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 < 150)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 + 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 + 10) * 0.01);
+                }
+            }
+            skala1 += 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+
+    }
+    private void ScaleSub_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 > 40)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 - 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 - 10) * 0.01);
+                }
+            }
+            skala1 -= 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+
     }
 
 }

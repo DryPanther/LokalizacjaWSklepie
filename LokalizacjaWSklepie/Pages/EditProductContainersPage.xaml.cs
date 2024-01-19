@@ -9,6 +9,7 @@ public partial class EditProductContainersPage : ContentPage
 {
     private readonly string apiBaseUrl = ApiConfiguration.ApiBaseUrl;
     private int skala = 100;
+    private double skala1 = 100;
     private int shopId;
     private string name;
     public EditProductContainersPage(int shopId, string name)
@@ -29,6 +30,7 @@ public partial class EditProductContainersPage : ContentPage
             if (shopMapData != null)
             {
                 var shopBox = CreateShopBox(shopMapData.Width, shopMapData.Length);
+                shopBox.ClassId = "Sklep";
                 Layout.Children.Add(shopBox);
 
                 BoxViewExtensions.SetId(shopBox, shopMapData.ShopId);
@@ -51,11 +53,11 @@ public partial class EditProductContainersPage : ContentPage
         }
     }
 
-    private BoxView CreateShopBox(double width, double length)
+    private BoxViewExtensions CreateShopBox(double width, double length)
     {
-        var shopBox = new BoxView
+        var shopBox = new BoxViewExtensions
         {
-            Color = Colors.LightGray,
+            BackgroundColor = Colors.LightGray,
             WidthRequest = width * skala,
             HeightRequest = length * skala
         };
@@ -146,6 +148,44 @@ public partial class EditProductContainersPage : ContentPage
             int containerId = BoxViewExtensions.GetId(selectedShelf);
             await Navigation.PushAsync(new ProductsInContainerPage(containerId, shopId, name));
         }
+    }
+    private void ScaleAdd_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 < 150)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 + 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 + 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 + 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 + 10) * 0.01);
+                }
+            }
+            skala1 += 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+
+    }
+    private void ScaleSub_Clicked(object sender, EventArgs e)
+    {
+        if (skala1 > 40)
+        {
+            foreach (var item in Layout.OfType<BoxViewExtensions>())
+            {
+                item.WidthRequest = ((item.Width * 100) / skala1) * ((skala1 - 10) * 0.01);
+                item.HeightRequest = ((item.Height * 100) / skala1) * ((skala1 - 10) * 0.01);
+                if (item.ClassId != "Sklep")
+                {
+                    item.TranslationX = ((item.TranslationX * 100) / skala1) * ((skala1 - 10) * 0.01);
+                    item.TranslationY = ((item.TranslationY * 100) / skala1) * ((skala1 - 10) * 0.01);
+                }
+            }
+            skala1 -= 10;
+            Scale.Text = Convert.ToString(skala1) + "%";
+        }
+
     }
 
 }
