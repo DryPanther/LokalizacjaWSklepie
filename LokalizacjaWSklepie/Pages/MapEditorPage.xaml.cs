@@ -75,8 +75,8 @@ public partial class MapEditorPage : ContentPage
     {
         var containerBox = new BoxViewExtensions
         {
-            WidthRequest = width * skala,
-            HeightRequest = length * skala,
+            WidthRequest = width * skala1,
+            HeightRequest = length * skala1,
             CornerRadius = 10
 
         };

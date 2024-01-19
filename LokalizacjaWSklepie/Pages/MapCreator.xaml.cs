@@ -291,8 +291,8 @@ namespace LokalizacjaWSklepie.Pages
                 {
                     var prostokat = new BoxViewExtensions
                     {
-                        WidthRequest = szerokosc * skala,
-                        HeightRequest = wysokosc * skala,
+                        WidthRequest = szerokosc * skala1,
+                        HeightRequest = wysokosc * skala1,
                         CornerRadius = 10
 
                     };
