@@ -24,7 +24,7 @@ public partial class UserRegistrationPage : ContentPage
                     {
                         Username = usernameEntry.Text,
                         Email = emailEntry.Text,
-                        Password = passwordEntry.Text,
+                        Password = BCrypt.Net.BCrypt.EnhancedHashPassword(passwordEntry.Text, 13),
                         Role = "Client"
                     };
 

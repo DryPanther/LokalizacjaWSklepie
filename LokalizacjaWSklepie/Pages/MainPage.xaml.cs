@@ -25,7 +25,7 @@ public partial class MainPage : ContentPage
         }
         else
         {
-            if (user.Password == Password.Text)
+            if (BCrypt.Net.BCrypt.EnhancedVerify(Password.Text, user.Password))
             {
                 if (user.Role == "Admin")
                 {
