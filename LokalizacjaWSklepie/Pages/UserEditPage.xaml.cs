@@ -21,6 +21,10 @@ public partial class UserEditPage : ContentPage
         {
             using (HttpClient client = new HttpClient())
             {
+                if (Password.Text != null && Password.Text != "")
+                {
+                    user.Password = BCrypt.Net.BCrypt.EnhancedHashPassword(Password.Text, 13);
+                }
                 string json = JsonConvert.SerializeObject(user);
                 StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
 

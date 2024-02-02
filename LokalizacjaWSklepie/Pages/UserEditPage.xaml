@@ -10,6 +10,9 @@
         <Label Text="Email:" />
         <Entry Text="{Binding Email}" />
 
+        <Label Text="Hasło:" />
+        <Entry x:Name="Password" Text="{Binding Password}}" IsPassword="True"/>
+
         <Picker Title="Wybierz role użytkownika" SelectedItem="{Binding Role}">
             <Picker.ItemsSource>
                 <x:Array Type="{x:Type x:String}">
